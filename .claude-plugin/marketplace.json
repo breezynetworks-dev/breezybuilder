@@ -1,0 +1,13 @@
+{
+  "name": "breezynetworks",
+  "owner": {
+    "name": "BreezyNetworks"
+  },
+  "plugins": [
+    {
+      "name": "breezybuilder",
+      "source": "./breezybuilder",
+      "description": "Production software from vision documents. Multi-expert deliberation, atomic decomposition, dumb execution loops. Big projects, tiny pieces."
+    }
+  ]
+}
