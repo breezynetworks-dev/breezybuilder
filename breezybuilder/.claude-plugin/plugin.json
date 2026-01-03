@@ -6,10 +6,3 @@
     "name": "BreezyBuilder"
   }
 }
-```
-
-**Currently it contains:**
-```
-git clone https://github.com/breezynetworks-dev/breezybuilder.git
-cd breezybuilder
-...
