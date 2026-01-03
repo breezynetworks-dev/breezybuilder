@@ -1,6 +1,15 @@
+{
+  "name": "breezybuilder",
+  "description": "Production software from vision documents. Multi-expert deliberation, atomic decomposition, dumb execution loops. Big projects, tiny pieces.",
+  "version": "1.0.0",
+  "author": {
+    "name": "BreezyBuilder"
+  }
+}
+```
+
+**Currently it contains:**
+```
 git clone https://github.com/breezynetworks-dev/breezybuilder.git
 cd breezybuilder
-# unzip and copy everything including hidden folders
-git add -A
-git commit -m "Add .claude-plugin folders"
-git push
+...
