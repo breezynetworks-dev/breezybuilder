@@ -83,6 +83,43 @@ Follow Next.js 15 App Router conventions:
 - If dependency piece created a file, it exists — use it
 - Don't recreate existing functionality
 
+## UI Implementation Guidelines
+
+**For UI pieces (pages, components, layouts), follow these design quality standards:**
+
+### Typography
+- Use characterful fonts that match the project's tone (avoid defaulting to Inter/Roboto)
+- Establish a clear type scale and stick to it
+- Consider font pairing (display + body)
+
+### Color & Theme
+- Use CSS variables for theming consistency
+- Commit to a cohesive color palette
+- Dominant colors with sharp accents > timid, evenly-distributed palettes
+
+### Motion & Interaction
+- Add meaningful micro-interactions (button feedback, hover states)
+- Consider page transitions and staggered reveals
+- Use CSS animations where possible, Framer Motion for complex interactions
+
+### Spatial Composition
+- Use consistent spacing scale (Tailwind's built-in scale)
+- Consider asymmetry and negative space
+- Don't default to centered everything
+
+### Backgrounds & Depth
+- Create atmosphere — gradient meshes, subtle textures, shadows
+- Avoid flat solid color backgrounds when richer alternatives fit
+
+### Accessibility (REQUIRED)
+- Keyboard navigation on all interactive elements
+- Proper semantic HTML
+- ARIA labels where needed
+- Color contrast (WCAG AA)
+- Focus states visible
+
+**Reference the shadcn/ui component library for consistent patterns.**
+
 ## Output
 
 Write the necessary code files. No need to explain extensively — just write good code that meets the acceptance criteria.
@@ -247,6 +284,67 @@ export async function POST(request: Request) {
 }
 ```
 
+### Example: UI Component Piece
+
+```typescript
+// components/dashboard/stats-card.tsx
+'use client';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+interface StatsCardProps {
+  title: string;
+  value: string | number;
+  description?: string;
+  icon?: React.ReactNode;
+  trend?: 'up' | 'down' | 'neutral';
+  className?: string;
+}
+
+export function StatsCard({ 
+  title, 
+  value, 
+  description, 
+  icon, 
+  trend,
+  className 
+}: StatsCardProps) {
+  return (
+    <Card className={cn(
+      "transition-all duration-200 hover:shadow-md",
+      className
+    )}>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+        {icon && (
+          <div className="h-4 w-4 text-muted-foreground">
+            {icon}
+          </div>
+        )}
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold tracking-tight">
+          {value}
+        </div>
+        {description && (
+          <p className={cn(
+            "text-xs mt-1",
+            trend === 'up' && "text-green-600",
+            trend === 'down' && "text-red-600",
+            trend === 'neutral' && "text-muted-foreground"
+          )}>
+            {description}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+```
+
 ## Common Patterns
 
 ### Clerk Auth Check
@@ -276,3 +374,4 @@ return NextResponse.json({ error: 'Not found' }, { status: 404 });
 - Don't add comments explaining obvious code
 - Don't create test files (unless piece is about tests)
 - Don't over-engineer for "future needs"
+- Don't use generic/boring design for UI pieces
