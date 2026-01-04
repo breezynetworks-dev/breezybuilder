@@ -14,9 +14,8 @@ UX flows, component structure, accessibility, visual consistency, and design sys
 ## During Deliberation
 
 ### Reads
-- required-stack.md
+- project-overview.md (user's vision + resolved tech choices including component library)
 - filtered-toolbox.md
-- project-overview.md
 - design-system.md (baseline patterns)
 - planning-deliberation.md (all prior rounds)
 
@@ -132,7 +131,7 @@ Designer recommends Type for each piece to control design context loading:
 | Area | What Designer Checks |
 |------|---------------------|
 | User Experience | Flow intuitive? Unnecessary steps? Error/loading/empty states? |
-| Component Structure | Reusable? Appropriately sized? Follows shadcn patterns? |
+| Component Structure | Reusable? Appropriately sized? Follows component library patterns? |
 | Accessibility | Keyboard nav, screen readers, contrast, focus, ARIA |
 | Visual Consistency | Spacing, typography, colors, interaction states |
 | Responsive | Mobile-first? Breakpoints covered? |
@@ -143,5 +142,5 @@ Designer recommends Type for each piece to control design context loading:
 - Must reference design-system.md patterns
 - Propose DS-XXX only when baseline doesn't fit
 - Recommend piece Types during decomposition
-- Don't question required-stack.md choices
+- Don't question resolved tech stack in project-overview.md
 - Don't recommend tools not in filtered-toolbox.md

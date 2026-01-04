@@ -9,7 +9,7 @@ Orchestrate the full planning phase: intake → deliberation → decomposition �
 
 ## Pre-flight Checks
 
-1. Verify `.breezybuilder/` exists with required-stack.md and potential-toolbox.md
+1. Verify `.breezybuilder/` exists with defaults.md and potential-toolbox.md
    - If missing: "Run /breezybuilder:init first"
 2. Verify `.breezybuilder/design-system.md` exists
    - If missing: Warn and copy from built-in template
@@ -26,17 +26,17 @@ Note: The raw overview is preserved verbatim in the enriched overview's "Origina
 
 ## Phase 2: Intake
 
-The intake phase fills gaps in the overview with targeted questions—both product and technical.
+The intake phase detects project type, fills gaps in the overview with targeted questions—both product and technical.
 
 ### 2.1 Parse Overview
 
 1. Invoke `breezybuilder-overview-parser` subagent
-   - Pass: raw overview text, potential-toolbox.md
-   - Receive: analysis with detected features, gaps, and technical questions to ask
+   - Pass: raw overview text, defaults.md, potential-toolbox.md
+   - Receive: analysis with project type, detected features, gaps, and technical questions to ask
 
 ### 2.2 Project Manager (Product Questions)
 
-**NEW: Ask product questions before technical questions.**
+**Ask product questions before technical questions.**
 
 1. Present transition to user:
    ```
@@ -99,8 +99,20 @@ Based on overview-parser analysis, ask questions for unspecified technical items
 - Only ask what's NOT already in the overview
 - Maximum 6 conditional questions
 - Skip questions where overview is explicit
+- Include component library question if complex UI detected
 
 Example questions (only if needed):
+
+```
+Your project has complex UI (dashboard, data tables).
+
+Which component library setup?
+1. shadcn/ui + BaseUI — headless BaseUI primitives with shadcn styling
+2. shadcn/ui + Radix — headless Radix primitives with shadcn styling  
+3. No component library — custom components only
+
+Your choice [1/2/3]:
+```
 
 ```
 Theme preference?
@@ -299,7 +311,13 @@ Business Model: [from PM]
 
 ## Technical Choices
 
+Project Type: [Web App / Python / CLI Tool / Backend Service]
 Infrastructure: [LOCAL/REMOTE]
+Framework: [Next.js 15 / FastAPI / etc.]
+Language: [TypeScript / Python / etc.]
+Styling: [Tailwind CSS 4 / etc.]
+Component Library: [shadcn/ui + BaseUI / shadcn/ui + Radix / None]
+Database: [PostgreSQL + Drizzle / etc.]
 Auth Provider: [Clerk/NextAuth/None]
 Payment Provider: [Stripe/None]
 Email Provider: [Resend/None]
@@ -388,20 +406,21 @@ Append to planning-deliberation.md:
 "## Round {round}\n\n"
 
 1. Invoke `breezybuilder-analyst` subagent
-   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md
+   - Pass: project-overview.md, filtered-toolbox.md, planning-deliberation.md
+   - project-overview.md contains resolved tech stack — experts build within those choices
    - Append output to planning-deliberation.md
 
 2. Invoke `breezybuilder-architect` subagent
-   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md
+   - Pass: project-overview.md, filtered-toolbox.md, planning-deliberation.md
    - Append output to planning-deliberation.md
 
 3. Invoke `breezybuilder-designer` subagent
-   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md, **design-system.md**
+   - Pass: project-overview.md, filtered-toolbox.md, planning-deliberation.md, **design-system.md**
    - Designer uses design-system.md to identify baseline patterns and propose DS-XXX refinements
    - Append output to planning-deliberation.md
 
 4. Invoke `breezybuilder-senior-dev` subagent
-   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md
+   - Pass: project-overview.md, filtered-toolbox.md, planning-deliberation.md
    - Append output to planning-deliberation.md
 
 5. Check exhaustion (only if round >= 5):
@@ -471,7 +490,7 @@ This extracts architecture decisions, integration specs, cost controls, error ha
 2. Run decomposition loop (same pattern as deliberation):
    - Minimum 5 rounds
    - Same 4 experts with decomposition focus
-   - Pass to Analyst, Architect, Senior Dev: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md, planning-decisions.md, planning-decomposition.md
+   - Pass to Analyst, Architect, Senior Dev: project-overview.md, filtered-toolbox.md, planning-deliberation.md, planning-decisions.md, planning-decomposition.md
    - **Pass to Designer: all of the above PLUS design-system.md**
    - Check exhaustion after round 5 (all 4 must say "NOTHING NEW")
    - Experts focus on: pieces, dependencies, sequence, sizing, UI components
@@ -479,7 +498,7 @@ This extracts architecture decisions, integration specs, cost controls, error ha
    - **Designer recommends piece Types (backend/frontend/fullstack) and references DS-XXX decisions**
 
 3. After exhaustion, invoke `breezybuilder-decomposition-synthesizer`:
-   - Extract phases, pieces, demo points
+   - Extract phases, pieces (with Types), demo points
    - Present to user
 
 ## Phase 8: Demo Strategy Selection
@@ -488,7 +507,7 @@ Present to user:
 ```
 PHASES IDENTIFIED:
 
-Phase 1: [name] — [N pieces]
+Phase 1: [name] — [N pieces] (backend: X, frontend: Y, fullstack: Z)
 Phase 2: [name] — [N pieces]
   ◆ DEMO POINT after this phase
 Phase 3: [name] — [N pieces]
@@ -535,6 +554,7 @@ Output to user:
 ```
 ✓ Planning complete
 
+Project Type: [Web App / Python / etc.]
 Infrastructure: [LOCAL/REMOTE]
 
 Created:
@@ -542,7 +562,7 @@ Created:
 - planning-deliberation.md — [N] rounds of expert deliberation
 - planning-decisions.md — [N] decisions extracted (including [N] DS-XXX design standards)
 - planning-decomposition.md — [N] rounds of decomposition
-- build-order.md — [N] phases, [N] pieces
+- build-order.md — [N] phases, [N] pieces (backend: X, frontend: Y, fullstack: Z)
 
 [If LOCAL:]
 Local setup will use Docker. Make sure Docker is running before execution.

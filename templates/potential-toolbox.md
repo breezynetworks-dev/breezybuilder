@@ -5,6 +5,26 @@ The intake phase will select from this list based on each project's needs.
 
 ---
 
+## Component Libraries
+
+UI component primitives and styling systems.
+
+### shadcn/ui + BaseUI
+- **Use for:** Headless BaseUI primitives with shadcn styling
+- **Docs:** https://ui.shadcn.com, https://base-ui.com
+- **Best for:** Full control, accessible by default
+
+### shadcn/ui + Radix
+- **Use for:** Headless Radix primitives with shadcn styling
+- **Docs:** https://ui.shadcn.com, https://www.radix-ui.com
+- **Best for:** Most common choice, great documentation
+
+### No component library
+- **Use for:** Simple projects, custom components only
+- **Best for:** Landing pages, minimal UI
+
+---
+
 ## Authentication
 
 Tools for user auth and session management.
@@ -34,6 +54,11 @@ Database options and ORMs.
 - **Use for:** Postgres + realtime + auth + storage bundle
 - **Docs:** https://supabase.com/docs
 - **Pricing:** Free tier available
+
+### SQLite + Drizzle
+- **Use for:** Simple projects, embedded database
+- **Local:** File-based, no Docker needed
+- **Best for:** CLI tools, small apps
 
 ---
 
@@ -184,6 +209,28 @@ In-memory caching and real-time features.
 - **Use for:** Caching, sessions, rate limiting, pub/sub
 - **Local:** Docker redis:7
 - **Remote:** Upstash, Redis Cloud
+
+---
+
+## Python-Specific Tools
+
+For Python projects.
+
+### FastAPI
+- **Use for:** Modern Python web framework, async, auto-docs
+- **Docs:** https://fastapi.tiangolo.com
+
+### Poetry
+- **Use for:** Python dependency management
+- **Docs:** https://python-poetry.org/docs
+
+### SQLAlchemy
+- **Use for:** Python ORM, flexible and powerful
+- **Docs:** https://docs.sqlalchemy.org
+
+### Celery
+- **Use for:** Python background tasks, distributed processing
+- **Docs:** https://docs.celeryq.dev
 
 ---
 

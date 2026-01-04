@@ -30,7 +30,7 @@ Resume from the last known state. Useful if a session was interrupted.
 5. **Check for project-overview.md** (if exists but no deliberation)
    - Resume at toolbox filter → deliberation
 
-6. **Only required-stack.md and potential-toolbox.md**
+6. **Only defaults.md and potential-toolbox.md**
    - "Initialized but no project overview. Run /breezybuilder:plan to start planning."
 
 ## Resume Actions
@@ -40,9 +40,11 @@ Resume from the last known state. Useful if a session was interrupted.
 ```
 Resuming deliberation...
 
+Project Type: [Web App / Python / etc.]
+
 Last state:
 - Round: [N]
-- Last expert: [Analyst/Architect/Senior Dev]
+- Last expert: [Analyst/Architect/Designer/Senior Dev]
 - Decisions synthesized: [yes/no]
 
 Continuing from Round [N+1]...
@@ -55,8 +57,10 @@ Then run deliberation loop from current round.
 ```
 Resuming decomposition...
 
+Project Type: [Web App / Python / etc.]
+
 Deliberation: Complete ([N] rounds)
-Decisions: [N] extracted
+Decisions: [N] extracted (including [N] DS-XXX)
 Decomposition: Round [M]
 
 Continuing from Round [M+1]...
@@ -69,12 +73,16 @@ Then run decomposition loop from current round.
 ```
 Resuming execution...
 
+Project Type: [Web App / Python / etc.]
+Infrastructure: [LOCAL / REMOTE]
+
 Progress: [X]% complete
-- Completed: [N] pieces
+- Completed: [N] pieces (backend: [n], frontend: [n], fullstack: [n])
 - Remaining: [M] pieces
 - Decisions available: [N]
 
 Current piece: [Piece X.Y: name]
+Type: [backend / frontend / fullstack]
 Status: [last known status]
 
 Continuing...
@@ -86,10 +94,11 @@ Then run execution loop from current piece.
 
 Read the latest entries in each file to determine exact state:
 
+- **project-overview.md**: Check "Technical Choices" section for project type
 - **planning-deliberation.md**: Look for last "## Round N" header
 - **planning-decisions.md**: Check if exists and has content
 - **planning-decomposition.md**: Look for last "## Round N" header
-- **build-order.md**: Find first `[ ]` checkbox
+- **build-order.md**: Find first `[ ]` checkbox, parse Types
 - **demo-log.md**: Check for incomplete demo point entries
 
 ## Output

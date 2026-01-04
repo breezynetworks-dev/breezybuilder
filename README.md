@@ -6,10 +6,11 @@
 
 You give it a project overview. It:
 
-1. **Intake** — Asks targeted questions to fill gaps (infrastructure, auth, payments, etc.)
-2. **Deliberates** — 4 experts discuss WHAT to build until they have nothing new to add
-3. **Decomposes** — Same experts discuss HOW to break it into atomic pieces
-4. **Executes** — Builds each piece with implement → verify → review loops
+1. **Detects** — Identifies your project type (Web App, Python, CLI, etc.)
+2. **Intake** — Asks targeted questions to fill gaps (infrastructure, auth, payments, component library, etc.)
+3. **Deliberates** — 4 experts discuss WHAT to build until they have nothing new to add
+4. **Decomposes** — Same experts discuss HOW to break it into atomic pieces
+5. **Executes** — Builds each piece with implement → verify → review loops
 
 You interact at key decision points. Everything else runs autonomously.
 
@@ -36,8 +37,8 @@ cd your-project
 ```
 
 Creates `.breezybuilder/` with:
-- `required-stack.md` — Your tech preferences (framework, styling)
-- `potential-toolbox.md` — Your curated tool catalog
+- `defaults.md` — Smart defaults by project type
+- `potential-toolbox.md` — Your curated tool catalog (including component libraries)
 - `design-system.md` — Your design patterns (typography, spacing, components)
 
 **First run:** Uses built-in defaults.
@@ -50,11 +51,12 @@ Creates `.breezybuilder/` with:
 ```
 
 1. Paste your project overview
-2. **Intake phase** — Answer quick questions (local/remote, auth, payments, etc.)
-3. Experts deliberate (minimum 5 rounds, until exhausted)
-4. Answer any questions they surface
-5. They decompose into phases and pieces
-6. Select your demo strategy
+2. **Project type detected** — Web App, Python, CLI, etc.
+3. **Intake phase** — Answer quick questions (infrastructure, component library, auth, etc.)
+4. Experts deliberate (minimum 5 rounds, until exhausted)
+5. Answer any questions they surface
+6. They decompose into phases and pieces
+7. Select your demo strategy
 
 ### 3. Execute
 
@@ -71,7 +73,7 @@ Builds piece by piece. Pauses at demo points based on your strategy.
 | Command | Purpose |
 |---------|---------|
 | `/breezybuilder:init` | Create `.breezybuilder/` with config files |
-| `/breezybuilder:plan` | Run deliberation → decomposition → build-order |
+| `/breezybuilder:plan` | Run intake → deliberation → decomposition → build-order |
 | `/breezybuilder:execute` | Build piece by piece following build-order |
 | `/breezybuilder:status` | Show current state |
 | `/breezybuilder:resume` | Continue from where you left off |
@@ -85,7 +87,7 @@ Save your preferences once, reuse across all projects:
 ```bash
 # After customizing your first project
 mkdir -p ~/.breezybuilder
-cp .breezybuilder/required-stack.md ~/.breezybuilder/
+cp .breezybuilder/defaults.md ~/.breezybuilder/
 cp .breezybuilder/potential-toolbox.md ~/.breezybuilder/
 cp .breezybuilder/design-system.md ~/.breezybuilder/
 ```
@@ -97,6 +99,19 @@ Now every `/breezybuilder:init` uses YOUR defaults, not built-in templates.
 ---
 
 ## How Planning Works
+
+### Project Type Detection
+
+Overview Parser detects project type from signals:
+
+| Signals | Project Type |
+|---------|--------------|
+| "dashboard", "SaaS", "web app", "Next.js" | Web App |
+| "FastAPI", "Django", "Flask", "Python" | Python |
+| "CLI", "command line", "terminal" | CLI Tool |
+| "API only", "microservice" | Backend Service |
+
+Defaults are loaded for that project type. If unclear, you're asked.
 
 ### Four Experts
 
@@ -175,7 +190,7 @@ At each demo point:
 - **Typography** — Scale from page titles to captions
 - **Spacing** — Consistent padding and gap values
 - **Layout Patterns** — Page, card grid, data table, stack
-- **Component Patterns** — Forms, buttons, dialogs (using shadcn/ui)
+- **Component Patterns** — Forms, buttons, dialogs
 - **State Patterns** — Loading, empty, error, success
 - **Accessibility** — Required standards (contrast, keyboard, ARIA)
 
@@ -186,7 +201,7 @@ When baseline patterns don't fit your project, Designer proposes refinements:
 ```markdown
 ### Designer
 
-DECISIONS PROPOSED:
+DS-XXX PROPOSALS:
 - DS-001: Compact card variant
   - Baseline: p-4 padding (design-system.md default)
   - Proposed: p-3 padding, text-xs metadata
@@ -201,17 +216,17 @@ These become DS-XXX decisions in `planning-decisions.md` and are enforced during
 
 ```
 ~/.breezybuilder/                    # Global defaults (optional, one-time setup)
-├── required-stack.md
+├── defaults.md
 ├── potential-toolbox.md
 └── design-system.md
 
 your-project/
 ├── .breezybuilder/
-│   ├── required-stack.md            # Your tech preferences
-│   ├── potential-toolbox.md         # Your tool catalog
+│   ├── defaults.md                  # Smart defaults by project type
+│   ├── potential-toolbox.md         # Your tool catalog (including component libraries)
 │   ├── design-system.md             # Your design patterns
 │   ├── filtered-toolbox.md          # Tools selected for THIS project
-│   ├── project-overview.md          # Enriched with intake answers
+│   ├── project-overview.md          # Enriched with intake answers + tech choices
 │   ├── planning/
 │   │   ├── planning-deliberation.md     # Expert discussions
 │   │   ├── planning-decisions.md        # Structured decisions (AD-, IS-, DS-, etc.)
@@ -231,21 +246,20 @@ your-project/
 
 ## Customization
 
-### Your Tech Preferences
+### Your Default Preferences
 
-Edit `.breezybuilder/required-stack.md`:
+Edit `.breezybuilder/defaults.md`:
 
 ```markdown
-## Framework
-- Remix
-- TypeScript
+## Web App (default)
+Framework: Remix
+Language: TypeScript
+Styling: Tailwind CSS 4
+Deployment: Fly.io
 
-## Styling
-- Tailwind CSS
-- Chakra UI
-
-## Deployment
-- Fly.io
+## Python
+Framework: Django
+Package Manager: Poetry
 ```
 
 ### Your Tool Catalog
@@ -253,6 +267,12 @@ Edit `.breezybuilder/required-stack.md`:
 Add tools to `.breezybuilder/potential-toolbox.md`:
 
 ```markdown
+## Component Libraries
+
+### shadcn/ui + BaseUI
+- **Use for:** Headless BaseUI primitives with shadcn styling
+- **Docs:** https://ui.shadcn.com, https://base-ui.com
+
 ## Authentication
 
 ### Supertokens
@@ -278,16 +298,15 @@ Edit `.breezybuilder/design-system.md`:
 
 ---
 
-## Default Stack
+## Default Stack (Web App)
 
 If you don't customize, BreezyBuilder defaults to:
 
 - **Framework:** Next.js 15 (App Router), TypeScript
-- **Styling:** Tailwind CSS 4, shadcn/ui
+- **Styling:** Tailwind CSS 4
 - **Deployment:** Vercel
-- **Design:** Dark mode, standard shadcn patterns
 
-**Project-specific selections** (auth, database, payments) are made during intake.
+**Project-specific selections** (component library, auth, database, payments) are made during intake based on what your project needs.
 
 ---
 

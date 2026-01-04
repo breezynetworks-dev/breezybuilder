@@ -12,7 +12,7 @@ Each piece in build-order.md, after Code Selector prepares context.
 
 | Content | Source | Tokens |
 |---------|--------|--------|
-| Stack | required-stack.md | ~500 |
+| Tech stack | project-overview.md (Technical Choices section) | ~300 |
 | Current piece | build-order.md (piece section only) | ~200 |
 | Decision sections | planning-decisions.md (filtered) | ~500-1000 |
 | Design context | design-system.md (filtered, if frontend/fullstack) | ~500-800 |
@@ -26,14 +26,20 @@ Each piece in build-order.md, after Code Selector prepares context.
 - planning-decomposition.md (archived)
 - demo-log.md (not needed)
 - Other pieces in build-order.md
-- project-overview.md (distilled into decisions)
+- defaults.md (resolved into project-overview.md)
 
 ## Context Structure
 
 ```markdown
-## Required Stack
+## Technical Choices
 
-[contents of required-stack.md]
+Framework: Next.js 15 (App Router)
+Language: TypeScript (strict)
+Styling: Tailwind CSS 4
+Component Library: shadcn/ui + BaseUI
+Database: PostgreSQL + Drizzle
+Auth: Clerk
+Payments: Stripe
 
 ---
 
@@ -111,7 +117,7 @@ Acceptance:
    - Follow layout patterns
    - Implement state patterns (loading, empty, error)
 4. **Apply DS-XXX refinements** (override baseline when specified)
-5. Use shadcn/ui components
+5. Use component library from project-overview.md
 6. Ensure accessibility
 
 ## Design System Application
@@ -188,7 +194,7 @@ Before completing:
 - [ ] Implements empty states
 - [ ] Implements error states
 - [ ] Applies DS-XXX refinements
-- [ ] Uses shadcn/ui components correctly
+- [ ] Uses component library correctly
 - [ ] Keyboard accessible
 - [ ] Screen reader friendly
 
@@ -282,6 +288,6 @@ export default function DashboardPage() {
 - Stay within acceptance criteria scope
 - Don't add features not in the piece
 - Don't modify files outside piece scope
-- Follow required-stack.md choices exactly
+- Follow tech stack from project-overview.md
 - Apply design-system.md patterns (frontend/fullstack)
 - Apply DS-XXX refinements when specified

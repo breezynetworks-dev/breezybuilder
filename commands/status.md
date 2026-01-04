@@ -21,8 +21,9 @@ Show the current state of BreezyBuilder for this project.
      ```
      BreezyBuilder: Initialized
      
-     ✓ required-stack.md
+     ✓ defaults.md
      ✓ potential-toolbox.md
+     ✓ design-system.md
      
      Next: Run /breezybuilder:plan to start planning.
      ```
@@ -31,6 +32,8 @@ Show the current state of BreezyBuilder for this project.
    - If planning-deliberation.md exists but no build-order.md:
      ```
      BreezyBuilder: Planning in progress
+     
+     Project Type: [Web App / Python / etc.]
      
      Deliberation: Round [N]
      - Analyst: [done/pending]
@@ -50,14 +53,17 @@ Show the current state of BreezyBuilder for this project.
      ```
      BreezyBuilder: Ready to execute
      
+     Project Type: [Web App / Python / etc.]
+     Infrastructure: [LOCAL / REMOTE]
+     
      Planning:
      - Deliberation: [N] rounds
-     - Decisions: [N] extracted (AD: [n], IS: [n], DS: [n], CC: [n], EH: [n], BR: [n])
+     - Decisions: [N] extracted (AD: [n], IS: [n], DS: [n], CC: [n], EH: [n], BR: [n], DM: [n], DP: [n])
      - Decomposition: [N] rounds
      
      Build Order:
      - Phases: [N]
-     - Pieces: [N] (backend: [X], frontend: [Y], fullstack: [Z])
+     - Pieces: [N] (backend: [n], frontend: [n], fullstack: [n])
      - Demo points: [N]
      
      Next: Run /breezybuilder:execute to start building.
@@ -68,13 +74,16 @@ Show the current state of BreezyBuilder for this project.
      ```
      BreezyBuilder: Executing
      
+     Project Type: [Web App / Python / etc.]
+     Infrastructure: [LOCAL / REMOTE]
+     
      Progress:
      - Phase [X] of [N]: [name]
      - Piece [Y] of [M]: [name]
      - Overall: [%] complete
      
      Current piece: [name]
-     - Type: [backend/frontend/fullstack]
+     - Type: [backend / frontend / fullstack]
      - Dependencies: [list]
      - Status: [implementing/verifying/reviewing]
      - Decision refs: [IDs referenced in acceptance criteria]
@@ -82,6 +91,11 @@ Show the current state of BreezyBuilder for this project.
      Completed phases:
      - Phase 1: [name] ✓
      - Phase 2: [name] ✓
+     
+     Pieces completed:
+     - Backend: [n] / [total]
+     - Frontend: [n] / [total]
+     - Fullstack: [n] / [total]
      
      Demo points reached: [N]
      Revisions: [N]
@@ -94,10 +108,14 @@ Show the current state of BreezyBuilder for this project.
      ```
      BreezyBuilder: Complete 🚀
      
+     Project Type: [Web App / Python / etc.]
+     Infrastructure: [LOCAL / REMOTE]
+     
      Summary:
      - Phases: [N] ✓
-     - Pieces: [N] ✓
+     - Pieces: [N] ✓ (backend: [n], frontend: [n], fullstack: [n])
      - Decisions implemented: [N]
+     - DS-XXX design standards: [N]
      - Demo points: [N]
      - Revisions: [N]
      
@@ -108,10 +126,19 @@ Show the current state of BreezyBuilder for this project.
 
 ## Parse Logic
 
+- Read project type from project-overview.md "Technical Choices" section
 - Count `[x]` vs `[ ]` in build-order.md for progress
+- Parse piece Types from build-order.md for type breakdown
 - Check phase "Status:" lines for phase progress
-- Count decision sections in planning-decisions.md (AD-, IS-, DS-, CC-, EH-, BR-, DM-, DP-)
+- Count decision sections in planning-decisions.md by prefix:
+  - AD- (Architecture Decisions)
+  - IS- (Integration Specifications)
+  - DS- (Design Standards)
+  - CC- (Cost Controls)
+  - EH- (Error Handling)
+  - BR- (Business Rules)
+  - DM- (Data Model)
+  - DP- (Deferred to Production)
 - Look for latest entry in demo-log.md for demo point status
 - Count revision-* folders for revision count
 - Scan current piece acceptance criteria for decision ID references
-- Parse piece Types from build-order.md for type breakdown

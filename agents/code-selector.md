@@ -10,7 +10,7 @@ Before each Implement agent spawns.
 
 ## Reads
 
-- build-order.md (current piece section only)
+- build-order.md (current piece section only, including Type)
 - planning-decisions.md (to identify relevant sections)
 - design-system.md (for frontend/fullstack pieces)
 - Project file structure (via Glob/find)
@@ -79,7 +79,7 @@ Based on what the piece builds, load only relevant sections from design-system.m
 
 ### DS-XXX Decisions
 
-Always load DS-XXX decisions that apply to the current piece:
+Always load DS-XXX decisions from planning-decisions.md that apply to the current piece:
 
 ```markdown
 DESIGN CONTEXT TO LOAD:
@@ -110,7 +110,7 @@ def select_context(piece):
     
     # 5. Select design context based on Type
     if piece.type in ['frontend', 'fullstack']:
-        design_context = filter_design_sections(piece)
+        design_context = filter_design_sections(piece, design_system_md)
         decisions.extend(find_ds_xxx_decisions(piece))
     
     # 6. Estimate tokens

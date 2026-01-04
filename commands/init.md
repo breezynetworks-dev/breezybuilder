@@ -1,5 +1,5 @@
 ---
-description: Initialize BreezyBuilder in the current project. Creates .breezybuilder/ directory with required-stack.md, potential-toolbox.md, and design-system.md from your global config (~/.breezybuilder/) or built-in defaults.
+description: Initialize BreezyBuilder in the current project. Creates .breezybuilder/ directory with defaults.md, potential-toolbox.md, and design-system.md from your global config (~/.breezybuilder/) or built-in defaults.
 ---
 
 # BreezyBuilder Init
@@ -16,7 +16,7 @@ Initialize BreezyBuilder for this project.
 2. **Create directory structure**
    ```
    .breezybuilder/
-   ├── required-stack.md      ← Your universal preferences
+   ├── defaults.md            ← Your preferences by project type
    ├── potential-toolbox.md   ← Your curated tool catalog
    ├── design-system.md       ← Your UI patterns
    ├── planning/
@@ -25,7 +25,7 @@ Initialize BreezyBuilder for this project.
 
 3. **Copy config files (with global config precedence)**
    
-   For each file (required-stack.md, potential-toolbox.md, design-system.md):
+   For each file (defaults.md, potential-toolbox.md, design-system.md):
    ```
    if ~/.breezybuilder/{file} exists:
        Copy from ~/.breezybuilder/{file}
@@ -40,7 +40,7 @@ Initialize BreezyBuilder for this project.
    ✓ BreezyBuilder initialized
    
    Created:
-   - .breezybuilder/required-stack.md — [Using global config | Using built-in default]
+   - .breezybuilder/defaults.md — [Using global config | Using built-in default]
    - .breezybuilder/potential-toolbox.md — [Using global config | Using built-in default]
    - .breezybuilder/design-system.md — [Using global config | Using built-in default]
    
@@ -62,7 +62,7 @@ Users can create `~/.breezybuilder/` with their preferred configs:
 
 ```
 ~/.breezybuilder/
-├── required-stack.md      ← Your universal tech preferences
+├── defaults.md            ← Your preferences by project type
 ├── potential-toolbox.md   ← Your curated tool catalog
 └── design-system.md       ← Your UI patterns
 ```
@@ -71,13 +71,20 @@ Users can create `~/.breezybuilder/` with their preferred configs:
 
 This allows users to:
 - Set up once, reuse everywhere
-- Maintain consistent tech choices across projects
+- Maintain consistent preferences across projects
 - Build a personal toolbox over time
 - Define UI patterns that match their style
 
 ## Default Templates
 
 If no global config exists, use built-in defaults from the plugin's `templates/` directory:
-- `templates/required-stack.md`
+- `templates/defaults.md`
 - `templates/potential-toolbox.md`
 - `templates/design-system.md`
+
+## Migration from required-stack.md
+
+If upgrading from an older version with `required-stack.md`:
+- The new `defaults.md` replaces it
+- Stack choices are now made during intake based on project type
+- Specific tool choices (auth, payments, etc.) come from toolbox

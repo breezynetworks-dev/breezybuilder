@@ -1,6 +1,6 @@
 ---
 name: breezybuilder-decomposition-synthesizer
-description: Synthesizes decomposition rounds into phases, pieces, and demo points. Invoked after experts are exhausted in decomposition phase.
+description: Synthesizes decomposition rounds into phases, pieces (with Types), and demo points. Invoked after experts are exhausted in decomposition phase.
 tools: Read
 model: sonnet
 ---
@@ -13,9 +13,19 @@ You synthesize the full decomposition history into a structured build plan.
 
 1. Read all decomposition rounds in planning-decomposition.md
 2. Extract the final agreed-upon phase structure
-3. List all pieces with their dependencies AND Types
+3. List all pieces with their **Types** and dependencies
 4. Identify demo points (where progress is visible to user)
 5. Identify the ship point (production ready)
+
+## Piece Types
+
+Designer recommends Types during decomposition. Include them in output:
+
+| Type | Description | Design Context |
+|------|-------------|----------------|
+| backend | API routes, DB, background jobs | Skipped |
+| frontend | UI components, pages | Loaded |
+| fullstack | API + UI in one piece | Loaded |
 
 ## Output Format
 
@@ -40,10 +50,16 @@ Phase 3: [name]
 ◆ DEMO POINT — [what's testable at this point]
 
 Phase 4: [name]
-- Piece 4.1: [name] (Type: fullstack)
-- Piece 4.2: [name] (Type: backend)
+- Piece 4.1: [name] (Type: backend)
+- Piece 4.2: [name] (Type: fullstack)
 
 ... (continue for all phases)
+
+Phase 6: [name]
+- Piece 6.1: [name] (Type: frontend)
+- Piece 6.2: [name] (Type: frontend)
+- Piece 6.3: [name] (Type: fullstack)
+◆ DEMO POINT — [what's testable at this point]
 
 Phase N: [name]
 - Piece N.1: [name] (Type: frontend)
@@ -73,22 +89,6 @@ Piece 2.1: 1.2
 UNRESOLVED (if any):
 - [any sequencing question experts couldn't resolve]
 ```
-
-## Piece Types
-
-Extract Types from Designer's recommendations in planning-decomposition.md:
-
-| Type | Description | Design Context at Build |
-|------|-------------|------------------------|
-| backend | API routes, database, background jobs | Skipped (0 tokens) |
-| frontend | UI components, pages, layouts | Loaded (~500-800 tokens) |
-| fullstack | API + UI in same piece | Loaded (~500-800 tokens) |
-
-**Default:** If Designer didn't specify, use these heuristics:
-- Database/schema pieces → backend
-- API routes without UI → backend
-- Pages, components → frontend
-- CRUD with UI → fullstack
 
 ## Demo Point Guidelines
 
@@ -120,15 +120,16 @@ Each piece should be:
 - Testable: Clear pass/fail acceptance criteria
 - Small: Fits comfortably in 80k context with dependencies
 - Sequential: Dependencies are clear and already complete when reached
+- Typed: Has explicit Type (backend/frontend/fullstack) for design context control
 
 ## Rules
 
 1. **Use final expert consensus** — not early round proposals
-2. **Resolve conflicts** — if experts disagreed, note as UNRESOLVED
-3. **Include all pieces** — don't skip any mentioned pieces
-4. **Clear dependencies** — every piece lists what it depends on
-5. **Meaningful names** — piece names should be descriptive
-6. **Include Types** — every piece must have a Type
+2. **Include Types** — every piece has a Type from Designer recommendations
+3. **Resolve conflicts** — if experts disagreed, note as UNRESOLVED
+4. **Include all pieces** — don't skip any mentioned pieces
+5. **Clear dependencies** — every piece lists what it depends on
+6. **Meaningful names** — piece names should be descriptive
 
 ## Example Output
 

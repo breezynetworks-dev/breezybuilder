@@ -10,11 +10,14 @@ Orchestrate the execution phase: implement → verify → review each piece.
 
 1. Verify `.breezybuilder/execution/build-order.md` exists
    - If missing: "Run /breezybuilder:plan first to create build order"
-2. Verify `.breezybuilder/planning/planning-decisions.md` exists
+2. Verify `.breezybuilder/project-overview.md` exists
+   - Contains resolved tech stack in "Technical Choices" section
+   - If missing: Fatal error — re-run planning
+3. Verify `.breezybuilder/planning/planning-decisions.md` exists
    - If missing: Warn but continue (older planning without decisions synthesis)
-3. Verify `.breezybuilder/design-system.md` exists
+4. Verify `.breezybuilder/design-system.md` exists
    - If missing: Warn (frontend/fullstack pieces won't have design context)
-4. Parse build-order.md to find current state
+5. Parse build-order.md to find current state
    - Find first piece with `[ ]` (not complete)
    - If all pieces `[x]`: "Build complete! Project shipped. 🚀"
 
@@ -44,7 +47,7 @@ For each pending piece in build-order.md:
 
 1. Invoke `breezybuilder-implement` subagent
    - Pass:
-     - required-stack.md
+     - project-overview.md "Technical Choices" section (resolved stack)
      - Current piece (name, type, dependencies, acceptance criteria)
      - Relevant code files (from Code Selector)
      - Relevant decision sections from planning-decisions.md (from Code Selector)
@@ -238,8 +241,11 @@ When final piece completes:
    ✓ BUILD COMPLETE — SHIPPED 🚀
    ════════════════════════════════════════
    
+   Project Type: [Web App / Python / etc.]
+   Infrastructure: [LOCAL / REMOTE]
+   
    Phases: [N] complete
-   Pieces: [N] implemented
+   Pieces: [N] implemented (backend: [n], frontend: [n], fullstack: [n])
    Revisions: [N]
    
    Your project is ready for deployment.
@@ -259,4 +265,5 @@ When final piece completes:
 - If code selector finds no relevant files, warn and ask to continue
 - If planning-decisions.md missing, warn but continue without decision sections
 - If design-system.md missing, warn but continue without design context (frontend/fullstack pieces may have inconsistent styling)
+- If project-overview.md missing, fatal error — cannot determine tech stack
 - Track all errors in demo-log.md for debugging
