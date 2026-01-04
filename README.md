@@ -114,8 +114,8 @@ Same pattern for breaking the project into:
 Code Select → Implement → Verify (2x) → Senior Review → Complete
 ```
 
-1. **Code Select** — Identifies which files to load (keeps context small)
-2. **Implement** — Writes code to meet acceptance criteria
+1. **Code Select** — Identifies which files and decision sections to load (keeps context small)
+2. **Implement** — Writes code to meet acceptance criteria using decision specs
 3. **Verify** — Checks all criteria pass (needs 2 consecutive passes)
 4. **Senior Review** — Final quality gate
 5. **Complete** — Updates build-order.md, moves to next piece
@@ -145,7 +145,7 @@ your-project/
 │   ├── project-overview.md        # Your vision (captured)
 │   ├── planning/
 │   │   ├── planning-deliberation.md   # Expert discussions
-│   │   ├── planning-decisions.md      # Structured decisions
+│   │   ├── planning-decisions.md      # Structured decisions for execution
 │   │   └── planning-decomposition.md  # Breakdown discussions
 │   └── execution/
 │       ├── build-order.md         # Phases + pieces + status
