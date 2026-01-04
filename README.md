@@ -6,9 +6,10 @@
 
 You give it a project overview. It:
 
-1. **Deliberates** — 4 experts discuss WHAT to build until they have nothing new to add
-2. **Decomposes** — Same experts discuss HOW to break it into atomic pieces
-3. **Executes** — Builds each piece with implement → verify → review loops
+1. **Intake** — Asks targeted questions to fill gaps (infrastructure, auth, payments, etc.)
+2. **Deliberates** — 4 experts discuss WHAT to build until they have nothing new to add
+3. **Decomposes** — Same experts discuss HOW to break it into atomic pieces
+4. **Executes** — Builds each piece with implement → verify → review loops
 
 You interact at key decision points. Everything else runs autonomously.
 
@@ -35,8 +36,10 @@ cd your-project
 ```
 
 Creates `.breezybuilder/` with:
-- `required-stack.md` — Tech stack (edit if needed)
-- `potential-toolbox.md` — Available tools (edit if needed)
+- `required-stack.md` — Your universal preferences (framework, styling)
+- `potential-toolbox.md` — Your curated tool catalog (grow over time)
+
+**These are YOUR preferences**, not project-specific. Edit once, reuse across projects.
 
 ### 2. Plan
 
@@ -45,10 +48,11 @@ Creates `.breezybuilder/` with:
 ```
 
 1. Paste your project overview
-2. Experts deliberate (minimum 5 rounds, until exhausted)
-3. Answer any questions they surface
-4. They decompose into phases and pieces
-5. Select your demo strategy
+2. **Intake phase** — Answer quick questions (local/remote, auth, payments, etc.)
+3. Experts deliberate (minimum 5 rounds, until exhausted)
+4. Answer any questions they surface
+5. They decompose into phases and pieces
+6. Select your demo strategy
 
 ### 3. Execute
 
@@ -139,10 +143,11 @@ At each demo point:
 ```
 your-project/
 ├── .breezybuilder/
-│   ├── required-stack.md          # Your tech stack
-│   ├── potential-toolbox.md       # Available tools
-│   ├── filtered-toolbox.md        # Tools for THIS project
-│   ├── project-overview.md        # Your vision (captured)
+│   ├── required-stack.md          # Your universal preferences
+│   ├── potential-toolbox.md       # Your curated tool catalog
+│   ├── filtered-toolbox.md        # Tools selected for THIS project
+│   ├── project-overview-raw.md    # Your original vision (immutable)
+│   ├── project-overview.md        # Enriched with intake answers
 │   ├── planning/
 │   │   ├── planning-deliberation.md   # Expert discussions
 │   │   ├── planning-decisions.md      # Structured decisions for execution
@@ -151,6 +156,8 @@ your-project/
 │       ├── build-order.md         # Phases + pieces + status
 │       ├── demo-log.md            # Demo point records
 │       └── revisions/             # If major changes needed
+├── docker-compose.yml             # Local services (if LOCAL infrastructure)
+├── .env.example                   # Env template (if REMOTE infrastructure)
 └── src/                           # Your actual code
 ```
 
@@ -160,32 +167,44 @@ your-project/
 
 ## Customization
 
-### Change Tech Stack
+### Your Universal Preferences
 
-Edit `.breezybuilder/required-stack.md` **before** running `/breezybuilder:plan`:
+Edit `.breezybuilder/required-stack.md` to set your go-to technologies:
 
 ```markdown
 ## Framework
 - Remix
 - TypeScript
 
-## Database  
-- SQLite
-- Prisma ORM
+## Styling
+- Tailwind CSS
+- Chakra UI
 
 ## Deployment
 - Fly.io
 ```
 
-### Add Custom Tools
+These apply to ALL your projects. Edit once, reuse everywhere.
 
-Edit `.breezybuilder/potential-toolbox.md`:
+### Grow Your Tool Catalog
+
+Add tools to `.breezybuilder/potential-toolbox.md` as you discover good options:
 
 ```markdown
-## Custom
-- Internal API — https://docs.internal.company.com
-- Legacy System — SOAP endpoint
+## Authentication
+
+### Supertokens
+- **Use for:** Self-hosted auth with more control than Clerk
+- **Docs:** https://supertokens.com/docs
+
+## Custom/Internal
+
+### Company Internal API
+- **Use for:** Legacy system integration
+- **Docs:** https://docs.internal.company.com
 ```
+
+The intake phase will show relevant options from your catalog.
 
 ---
 
@@ -194,10 +213,34 @@ Edit `.breezybuilder/potential-toolbox.md`:
 If you don't customize, BreezyBuilder defaults to:
 
 - **Framework:** Next.js 15 (App Router), TypeScript
-- **Styling:** Tailwind CSS 4, shadcn/ui
-- **Database:** PostgreSQL, Drizzle ORM
-- **Auth:** Clerk
+- **Styling:** Tailwind CSS 4, BaseUI, shadcn/ui
 - **Deployment:** Vercel
+
+**Project-specific selections** (auth, database, payments) are made during the intake phase based on your toolbox.
+
+---
+
+## Infrastructure
+
+During intake, you choose:
+
+**LOCAL (Recommended for development)**
+- Docker Compose for Postgres, Redis
+- Still needs API keys for services without local alternatives (Clerk, Stripe, Firecrawl)
+- Best for development — database/cache work offline
+
+**REMOTE (For cloud services)**
+- All services use cloud infrastructure
+- All API keys required upfront
+
+**Both modes:**
+- Create `.env.example` with all required variables
+- Block until you configure `.env`
+- **Verify all credentials work** before proceeding to deliberation
+
+This verification catches broken API keys early — not during piece 47 of execution.
+
+You can migrate from LOCAL to REMOTE later when deploying.
 
 ---
 
