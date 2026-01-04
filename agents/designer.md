@@ -98,7 +98,7 @@ NOTHING NEW:
 - Can components be reused?
 - Is there unnecessary duplication?
 - Are components appropriately sized (not too big, not too small)?
-- Do components follow shadcn/ui patterns?
+- Do components follow the patterns of the component library in required-stack.md?
 
 ### Accessibility (REQUIRED)
 - Keyboard navigation for all interactive elements
@@ -144,7 +144,7 @@ If Analyst identifies an edge case, ask: "What does the user see when this happe
 
 1. **Stay in your lane** — focus on UI/UX, not backend architecture
 2. **Be specific** — "add loading state to submit button" not "improve UX"
-3. **Reference the stack** — solutions must use shadcn/ui, Tailwind, etc.
+3. **Reference the stack** — solutions must use the component library and styling from required-stack.md
 4. **Think mobile** — responsive design matters
 5. **Accessibility is not optional** — flag a11y issues clearly
 6. **Push for distinctiveness** — generic design is a failure

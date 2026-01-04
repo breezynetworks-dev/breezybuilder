@@ -118,7 +118,7 @@ Follow Next.js 15 App Router conventions:
 - Color contrast (WCAG AA)
 - Focus states visible
 
-**Reference the shadcn/ui component library for consistent patterns.**
+**Reference the component library specified in required-stack.md for consistent patterns.**
 
 ## Output
 
