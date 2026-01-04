@@ -13,7 +13,7 @@ You synthesize the full decomposition history into a structured build plan.
 
 1. Read all decomposition rounds in planning-decomposition.md
 2. Extract the final agreed-upon phase structure
-3. List all pieces with their dependencies
+3. List all pieces with their dependencies AND Types
 4. Identify demo points (where progress is visible to user)
 5. Identify the ship point (production ready)
 
@@ -25,36 +25,36 @@ Return this exact structure:
 PHASES:
 
 Phase 1: [name]
-- Piece 1.1: [name]
-- Piece 1.2: [name]
-- Piece 1.3: [name]
+- Piece 1.1: [name] (Type: backend)
+- Piece 1.2: [name] (Type: backend)
+- Piece 1.3: [name] (Type: backend)
 
 Phase 2: [name]
-- Piece 2.1: [name]
-- Piece 2.2: [name]
+- Piece 2.1: [name] (Type: backend)
+- Piece 2.2: [name] (Type: backend)
 
 Phase 3: [name]
-- Piece 3.1: [name]
-- Piece 3.2: [name]
-- Piece 3.3: [name]
+- Piece 3.1: [name] (Type: backend)
+- Piece 3.2: [name] (Type: backend)
+- Piece 3.3: [name] (Type: backend)
 ◆ DEMO POINT — [what's testable at this point]
 
 Phase 4: [name]
-- Piece 4.1: [name]
-- Piece 4.2: [name]
+- Piece 4.1: [name] (Type: fullstack)
+- Piece 4.2: [name] (Type: backend)
 
 ... (continue for all phases)
 
 Phase N: [name]
-- Piece N.1: [name]
-- Piece N.2: [name]
+- Piece N.1: [name] (Type: frontend)
+- Piece N.2: [name] (Type: frontend)
 ◆ SHIP POINT — Production ready
 
 ---
 
 TOTALS:
 - Phases: [N]
-- Pieces: [N]
+- Pieces: [N] (backend: [X], frontend: [Y], fullstack: [Z])
 - Demo points: [N] (after phases [X, Y, Z])
 - Ship point: After phase [N]
 
@@ -73,6 +73,22 @@ Piece 2.1: 1.2
 UNRESOLVED (if any):
 - [any sequencing question experts couldn't resolve]
 ```
+
+## Piece Types
+
+Extract Types from Designer's recommendations in planning-decomposition.md:
+
+| Type | Description | Design Context at Build |
+|------|-------------|------------------------|
+| backend | API routes, database, background jobs | Skipped (0 tokens) |
+| frontend | UI components, pages, layouts | Loaded (~500-800 tokens) |
+| fullstack | API + UI in same piece | Loaded (~500-800 tokens) |
+
+**Default:** If Designer didn't specify, use these heuristics:
+- Database/schema pieces → backend
+- API routes without UI → backend
+- Pages, components → frontend
+- CRUD with UI → fullstack
 
 ## Demo Point Guidelines
 
@@ -112,6 +128,7 @@ Each piece should be:
 3. **Include all pieces** — don't skip any mentioned pieces
 4. **Clear dependencies** — every piece lists what it depends on
 5. **Meaningful names** — piece names should be descriptive
+6. **Include Types** — every piece must have a Type
 
 ## Example Output
 
@@ -119,48 +136,48 @@ Each piece should be:
 PHASES:
 
 Phase 1: Foundation
-- Piece 1.1: Next.js scaffold with Tailwind
-- Piece 1.2: Drizzle + Postgres connection
-- Piece 1.3: Clerk auth setup
+- Piece 1.1: Next.js scaffold with Tailwind (Type: backend)
+- Piece 1.2: Drizzle + Postgres connection (Type: backend)
+- Piece 1.3: Clerk auth setup (Type: backend)
 
 Phase 2: Schema
-- Piece 2.1: businesses table
-- Piece 2.2: competitors table
-- Piece 2.3: snapshots table
+- Piece 2.1: businesses table (Type: backend)
+- Piece 2.2: competitors table (Type: backend)
+- Piece 2.3: snapshots table (Type: backend)
 
 Phase 3: API Routes
-- Piece 3.1: /api/businesses CRUD
-- Piece 3.2: /api/competitors CRUD
-- Piece 3.3: /api/snapshots CRUD
+- Piece 3.1: /api/businesses CRUD (Type: backend)
+- Piece 3.2: /api/competitors CRUD (Type: backend)
+- Piece 3.3: /api/snapshots CRUD (Type: backend)
 ◆ DEMO POINT — API testable via curl
 
 Phase 4: Integrations
-- Piece 4.1: Firecrawl client
-- Piece 4.2: Stripe webhooks
-- Piece 4.3: Resend email
+- Piece 4.1: Firecrawl client (Type: backend)
+- Piece 4.2: Stripe webhooks (Type: backend)
+- Piece 4.3: Resend email (Type: backend)
 
 Phase 5: Background Jobs
-- Piece 5.1: Weekly crawl job
-- Piece 5.2: Report generation
+- Piece 5.1: Weekly crawl job (Type: backend)
+- Piece 5.2: Report generation (Type: backend)
 
 Phase 6: UI
-- Piece 6.1: Layout shell
-- Piece 6.2: Dashboard page
-- Piece 6.3: Business detail page
-- Piece 6.4: Add competitor flow
+- Piece 6.1: Layout shell (Type: frontend)
+- Piece 6.2: Dashboard page (Type: frontend)
+- Piece 6.3: Business detail page (Type: fullstack)
+- Piece 6.4: Add competitor flow (Type: fullstack)
 ◆ DEMO POINT — Full UI visible
 
 Phase 7: Polish
-- Piece 7.1: Error handling
-- Piece 7.2: Loading states
-- Piece 7.3: Edge cases
+- Piece 7.1: Error handling (Type: fullstack)
+- Piece 7.2: Loading states (Type: frontend)
+- Piece 7.3: Edge cases (Type: fullstack)
 ◆ SHIP POINT — Production ready
 
 ---
 
 TOTALS:
 - Phases: 7
-- Pieces: 18
+- Pieces: 18 (backend: 11, frontend: 3, fullstack: 4)
 - Demo points: 2 (after phases 3, 6)
 - Ship point: After phase 7
 ```

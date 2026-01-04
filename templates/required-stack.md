@@ -15,8 +15,7 @@ Edit this file to match your personal/team tech preferences.
 ## Styling
 
 - Tailwind CSS 4
-- BaseUI components (primary)
-- shadcn/ui (where BaseUI doesn't cover)
+- shadcn/ui components
 
 ## Deployment
 

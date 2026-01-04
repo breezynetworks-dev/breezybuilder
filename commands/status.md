@@ -35,6 +35,7 @@ Show the current state of BreezyBuilder for this project.
      Deliberation: Round [N]
      - Analyst: [done/pending]
      - Architect: [done/pending]
+     - Designer: [done/pending]
      - Senior Dev: [done/pending]
      
      Decisions: [not synthesized / [N] decisions extracted]
@@ -51,12 +52,12 @@ Show the current state of BreezyBuilder for this project.
      
      Planning:
      - Deliberation: [N] rounds
-     - Decisions: [N] extracted (AD: [n], IS: [n], CC: [n], EH: [n], BR: [n])
+     - Decisions: [N] extracted (AD: [n], IS: [n], DS: [n], CC: [n], EH: [n], BR: [n])
      - Decomposition: [N] rounds
      
      Build Order:
      - Phases: [N]
-     - Pieces: [N]
+     - Pieces: [N] (backend: [X], frontend: [Y], fullstack: [Z])
      - Demo points: [N]
      
      Next: Run /breezybuilder:execute to start building.
@@ -73,6 +74,7 @@ Show the current state of BreezyBuilder for this project.
      - Overall: [%] complete
      
      Current piece: [name]
+     - Type: [backend/frontend/fullstack]
      - Dependencies: [list]
      - Status: [implementing/verifying/reviewing]
      - Decision refs: [IDs referenced in acceptance criteria]
@@ -108,7 +110,8 @@ Show the current state of BreezyBuilder for this project.
 
 - Count `[x]` vs `[ ]` in build-order.md for progress
 - Check phase "Status:" lines for phase progress
-- Count decision sections in planning-decisions.md (AD-, IS-, CC-, EH-, BR-, DM-, DP-)
+- Count decision sections in planning-decisions.md (AD-, IS-, DS-, CC-, EH-, BR-, DM-, DP-)
 - Look for latest entry in demo-log.md for demo point status
 - Count revision-* folders for revision count
 - Scan current piece acceptance criteria for decision ID references
+- Parse piece Types from build-order.md for type breakdown

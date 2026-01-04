@@ -12,6 +12,7 @@ Before each Implement agent spawns.
 
 - build-order.md (current piece section only)
 - planning-decisions.md (to identify relevant sections)
+- design-system.md (for frontend/fullstack pieces)
 - Project file structure (via Glob/find)
 
 ## Outputs
@@ -65,7 +66,7 @@ Based on piece Type, load appropriate design context:
 
 ### What to Load for Frontend/Fullstack
 
-Based on what the piece builds, load only relevant sections:
+Based on what the piece builds, load only relevant sections from design-system.md:
 
 | Piece Builds | Load From design-system.md |
 |--------------|---------------------------|
