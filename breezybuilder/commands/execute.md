@@ -10,7 +10,9 @@ Orchestrate the execution phase: implement → verify → review each piece.
 
 1. Verify `.breezybuilder/execution/build-order.md` exists
    - If missing: "Run /breezybuilder:plan first to create build order"
-2. Parse build-order.md to find current state
+2. Verify `.breezybuilder/planning/planning-decisions.md` exists
+   - If missing: Warn but continue (older planning without decisions synthesis)
+3. Parse build-order.md to find current state
    - Find first piece with `[ ]` (not complete)
    - If all pieces `[x]`: "Build complete! Project shipped. 🚀"
 
@@ -21,19 +23,19 @@ For each pending piece in build-order.md:
 ### Step 1: Select Code Context
 
 1. Invoke `breezybuilder-code-selector` subagent
-   - Pass: current piece section from build-order.md, project file structure
-   - Receive: list of files to load, estimated tokens
+   - Pass: current piece section from build-order.md, project file structure, planning-decisions.md
+   - Receive: list of files to load, list of decision sections to load, estimated tokens
 
 2. If estimated tokens > 50k:
    - Warn: "Piece may be too large. Consider splitting."
    - Ask user to continue or pause
 
-3. Load identified files into context for next steps
+3. Load identified files AND decision sections into context for next steps
 
 ### Step 2: Implement
 
 1. Invoke `breezybuilder-implement` subagent
-   - Pass: required-stack.md, current piece (name, dependencies, acceptance criteria), relevant code files
+   - Pass: required-stack.md, current piece (name, dependencies, acceptance criteria), relevant code files, relevant decision sections from planning-decisions.md
    - Subagent writes code files directly to project
 
 2. Track: `verify_count = 0`
@@ -54,7 +56,7 @@ Loop until 2x VERIFIED or max 10 attempts:
 
 3. If ISSUES:
    verify_count = 0
-   Invoke `breezybuilder-implement` subagent again with issues
+   Invoke `breezybuilder-implement` subagent again with issues + decision sections
    Continue loop
 
 4. If attempts >= 10:
@@ -137,6 +139,7 @@ When user indicates "Major" change at demo point:
    ```
    .breezybuilder/execution/revisions/
    ├── revision-001-deliberation.md
+   ├── revision-001-decisions.md
    ├── revision-001-decomposition.md
    └── revision-001-build-order.md
    ```
@@ -169,17 +172,24 @@ When user indicates "Major" change at demo point:
    - Same 3 experts, minimum 5 rounds
    - Focus: What needs to change? What's unaffected? New pieces needed?
 
-4. Run revision decomposition:
+4. Run decisions synthesizer on revision deliberation:
+   - Creates revision-001-decisions.md (scoped to revision)
+
+5. Run revision decomposition:
    - Extract: MODIFIED pieces, ADDED pieces, REMOVED pieces
 
-5. Write revision-001-build-order.md with changes
+6. Write revision-001-build-order.md with changes
 
-6. Merge changes into main build-order.md:
+7. Merge changes into main build-order.md:
    - Insert new pieces at correct positions
    - Mark modified pieces for re-implementation
    - Add reference to revision-001 for audit trail
 
-7. Resume execution at first changed piece
+8. Merge new decisions into main planning-decisions.md:
+   - Add new decisions with "Added: Revision 001" note
+   - Update existing decisions if modified
+
+9. Resume execution at first changed piece
 
 ## Ship Point
 
@@ -212,6 +222,7 @@ When final piece completes:
    
    Audit trail:
    - .breezybuilder/planning/planning-deliberation.md
+   - .breezybuilder/planning/planning-decisions.md
    - .breezybuilder/planning/planning-decomposition.md
    - .breezybuilder/execution/build-order.md
    - .breezybuilder/execution/demo-log.md
@@ -222,4 +233,5 @@ When final piece completes:
 - If subagent fails, retry once before warning user
 - If piece fails 10 verify attempts, pause for user decision
 - If code selector finds no relevant files, warn and ask to continue
+- If planning-decisions.md missing, warn but continue without decision sections
 - Track all errors in demo-log.md for debugging

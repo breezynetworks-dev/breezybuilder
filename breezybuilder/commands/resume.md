@@ -24,7 +24,8 @@ Resume from the last known state. Useful if a session was interrupted.
 4. **Check deliberation state** (if planning-deliberation.md exists but no decomposition)
    - Count rounds, check last round for exhaustion
    - If not exhausted: Resume deliberation loop
-   - If exhausted: Run synthesizer, proceed to decomposition
+   - If exhausted but no planning-decisions.md: Run decisions synthesizer first
+   - If exhausted: Run deliberation synthesizer, proceed to decomposition
 
 5. **Check for project-overview.md** (if exists but no deliberation)
    - Resume at toolbox filter → deliberation
@@ -42,6 +43,7 @@ Resuming deliberation...
 Last state:
 - Round: [N]
 - Last expert: [Analyst/Architect/Senior Dev]
+- Decisions synthesized: [yes/no]
 
 Continuing from Round [N+1]...
 ```
@@ -54,6 +56,7 @@ Then run deliberation loop from current round.
 Resuming decomposition...
 
 Deliberation: Complete ([N] rounds)
+Decisions: [N] extracted
 Decomposition: Round [M]
 
 Continuing from Round [M+1]...
@@ -69,6 +72,7 @@ Resuming execution...
 Progress: [X]% complete
 - Completed: [N] pieces
 - Remaining: [M] pieces
+- Decisions available: [N]
 
 Current piece: [Piece X.Y: name]
 Status: [last known status]
@@ -83,6 +87,7 @@ Then run execution loop from current piece.
 Read the latest entries in each file to determine exact state:
 
 - **planning-deliberation.md**: Look for last "## Round N" header
+- **planning-decisions.md**: Check if exists and has content
 - **planning-decomposition.md**: Look for last "## Round N" header
 - **build-order.md**: Find first `[ ]` checkbox
 - **demo-log.md**: Check for incomplete demo point entries

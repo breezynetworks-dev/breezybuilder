@@ -80,7 +80,18 @@ Append to planning-deliberation.md:
    - Break loop (experts exhausted)
 ```
 
-## Phase 4: Synthesize & Get User Input
+## Phase 4: Synthesize Decisions
+
+**NEW: Run BEFORE deliberation synthesizer**
+
+1. Invoke `breezybuilder-decisions-synthesizer` subagent
+   - Pass: planning-deliberation.md, planning-decisions.md (if exists from prior cycle)
+   - Receive: structured decisions content
+   - Write to `.breezybuilder/planning/planning-decisions.md`
+
+This extracts architecture decisions, integration specs, cost controls, error handling patterns, and business rules into a structured format for downstream agents.
+
+## Phase 5: Synthesize & Get User Input
 
 1. Invoke `breezybuilder-deliberation-synthesizer` subagent
    - Pass: planning-deliberation.md
@@ -105,11 +116,12 @@ Append to planning-deliberation.md:
      ---
      ```
    - Run 5 more deliberation rounds (go back to Phase 3 loop)
+   - After those rounds exhaust, run Phase 4 again (update planning-decisions.md)
 
 3. If no questions and no decisions:
    - Deliberation complete, proceed to decomposition
 
-## Phase 5: Decomposition
+## Phase 6: Decomposition
 
 1. Create `.breezybuilder/planning/planning-decomposition.md`:
    ```markdown
@@ -128,12 +140,13 @@ Append to planning-deliberation.md:
    - Same 3 experts with decomposition focus
    - Check exhaustion after round 5
    - Experts focus on: pieces, dependencies, sequence, sizing
+   - Experts can reference planning-decisions.md for specific requirements
 
 3. After exhaustion, invoke `breezybuilder-decomposition-synthesizer`:
    - Extract phases, pieces, demo points
    - Present to user
 
-## Phase 6: Demo Strategy Selection
+## Phase 7: Demo Strategy Selection
 
 Present to user:
 ```
@@ -160,10 +173,10 @@ Enter 1, 2, or 3 (then phase numbers if 3):
 
 Capture user selection.
 
-## Phase 7: Write Build Order
+## Phase 8: Write Build Order
 
 1. Invoke `breezybuilder-build-order-writer` subagent
-   - Pass: planning-deliberation.md, planning-decomposition.md, user's demo strategy selection
+   - Pass: planning-deliberation.md, planning-decisions.md, planning-decomposition.md, user's demo strategy selection
    - Receive: complete build-order.md content
 
 2. Write to `.breezybuilder/execution/build-order.md`
@@ -187,6 +200,7 @@ Output to user:
 
 Created:
 - planning-deliberation.md — [N] rounds of expert deliberation
+- planning-decisions.md — [N] decisions extracted
 - planning-decomposition.md — [N] rounds of decomposition
 - build-order.md — [N] phases, [N] pieces
 
