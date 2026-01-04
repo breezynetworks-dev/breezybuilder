@@ -6,7 +6,7 @@
 
 You give it a project overview. It:
 
-1. **Deliberates** — 3 experts discuss WHAT to build until they have nothing new to add
+1. **Deliberates** — 4 experts discuss WHAT to build until they have nothing new to add
 2. **Decomposes** — Same experts discuss HOW to break it into atomic pieces
 3. **Executes** — Builds each piece with implement → verify → review loops
 
@@ -74,17 +74,18 @@ Builds piece by piece. Pauses at demo points based on your strategy.
 
 ## How Planning Works
 
-### Three Experts
+### Four Experts
 
 | Expert | Focus |
 |--------|-------|
 | **Analyst** | Business logic gaps, ambiguities, edge cases |
 | **Architect** | Tech decisions, dependencies, implementation |
-| **Senior Dev** | Challenges both, risks, what they missed |
+| **Designer** | UX flows, component structure, accessibility |
+| **Senior Dev** | Challenges all three, risks, what they missed |
 
 ### Exhaustion Rule
 
-Experts deliberate in rounds. Each round, all three contribute. They continue until **all three** say "NOTHING NEW" in the same round.
+Experts deliberate in rounds. Each round, all four contribute. They continue until **all four** say "NOTHING NEW" in the same round.
 
 Minimum 5 rounds before exhaustion is checked.
 
@@ -113,8 +114,8 @@ Same pattern for breaking the project into:
 Code Select → Implement → Verify (2x) → Senior Review → Complete
 ```
 
-1. **Code Select** — Identifies which files to load (keeps context small)
-2. **Implement** — Writes code to meet acceptance criteria
+1. **Code Select** — Identifies which files and decision sections to load (keeps context small)
+2. **Implement** — Writes code to meet acceptance criteria using decision specs
 3. **Verify** — Checks all criteria pass (needs 2 consecutive passes)
 4. **Senior Review** — Final quality gate
 5. **Complete** — Updates build-order.md, moves to next piece
@@ -144,6 +145,7 @@ your-project/
 │   ├── project-overview.md        # Your vision (captured)
 │   ├── planning/
 │   │   ├── planning-deliberation.md   # Expert discussions
+│   │   ├── planning-decisions.md      # Structured decisions for execution
 │   │   └── planning-decomposition.md  # Breakdown discussions
 │   └── execution/
 │       ├── build-order.md         # Phases + pieces + status
