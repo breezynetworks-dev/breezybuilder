@@ -33,7 +33,7 @@ Build production software from vision documents with minimal user involvement.
 1. **Intake** — Ask targeted questions to fill gaps
    - Infrastructure: LOCAL (Docker) or REMOTE (cloud services)
    - Auth, payments, theme, platform based on overview gaps
-   - Creates enriched project-overview.md
+   - Creates enriched project-overview.md (Original Vision section preserves verbatim input)
 
 2. **Deliberation** — 4 experts discuss WHAT to build until exhausted
    - Analyst: Business logic, gaps, edge cases
@@ -74,8 +74,7 @@ Demo points pause for user feedback. User can continue, provide feedback, or sto
 ├── required-stack.md          # Universal preferences (all projects)
 ├── potential-toolbox.md       # Curated tool catalog
 ├── filtered-toolbox.md        # Tools for THIS project
-├── project-overview-raw.md    # Original user input (immutable)
-├── project-overview.md        # Enriched with intake answers
+├── project-overview.md        # Enriched overview (Original Vision preserves raw input)
 ├── planning/
 │   ├── planning-deliberation.md
 │   ├── planning-decisions.md  # Structured decisions for execution
@@ -84,6 +83,10 @@ Demo points pause for user feedback. User can continue, provide feedback, or sto
     ├── build-order.md
     ├── demo-log.md
     └── revisions/             # If major changes
+        ├── revision-XXX-deliberation.md
+        ├── revision-XXX-decisions.md
+        ├── revision-XXX-decomposition.md
+        └── revision-XXX-build-order.md
 ```
 
 ## Context Management
@@ -156,4 +159,5 @@ Major feedback triggers:
 2. Run focused deliberation on change
 3. Create revision-XXX-decisions.md (scoped to change)
 4. Update build-order.md
-5. Resume execution
+5. Merge revision decisions into main planning-decisions.md
+6. Resume execution
