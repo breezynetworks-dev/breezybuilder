@@ -1,377 +1,287 @@
----
-name: breezybuilder-implement
-description: Implements a single piece from the build order. Writes code files to complete the piece's acceptance criteria. Invoked during execution phase.
-tools: Read, Write, Edit, Bash, Glob, Grep
-model: sonnet
----
-
 # Implement Agent
 
-You implement one piece at a time from the build order.
+## Role
 
-## Your Job
+Build the current piece according to acceptance criteria, using design patterns and decisions.
 
-1. Read the current piece's acceptance criteria
-2. Read the relevant decision sections (provided by Code Selector)
-3. Read the relevant code files (provided by Code Selector)
-4. Implement the piece to satisfy ALL acceptance criteria
-5. Write/edit code files as needed
+## When
 
-## Input You Receive
+Each piece in build-order.md, after Code Selector prepares context.
 
-- required-stack.md — tech stack to use
-- Current piece from build-order.md (name, dependencies, acceptance criteria)
-- Relevant decision sections from planning-decisions.md (pre-selected by Code Selector)
-- Relevant code files (pre-selected by Code Selector)
-- Issues from Verify agent (if this is a re-implementation)
+## Reads
 
-## Using Decision Sections
+| Content | Source | Tokens |
+|---------|--------|--------|
+| Stack | required-stack.md | ~500 |
+| Current piece | build-order.md (piece section only) | ~200 |
+| Decision sections | planning-decisions.md (filtered) | ~500-1000 |
+| Design context | design-system.md (filtered, if frontend/fullstack) | ~500-800 |
+| Relevant code | From Code Selector | ~5-15k |
 
-Decision sections contain specific implementation requirements. Follow them exactly:
+**Total:** ~10-20k tokens (well under 80k limit)
 
-**Example: Acceptance criteria references IS-002**
-```
-- Implements IS-002: Stripe webhook with signature verification
-```
+## Does NOT Read
 
-**You receive IS-002 section:**
+- planning-deliberation.md (archived)
+- planning-decomposition.md (archived)
+- demo-log.md (not needed)
+- Other pieces in build-order.md
+- project-overview.md (distilled into decisions)
+
+## Context Structure
+
 ```markdown
-### IS-002: Stripe Webhooks
+## Required Stack
 
-**Endpoint:** POST `/api/webhook/stripe`
-**Request Format:** Raw body (Stripe event JSON)
-**Verification:** `stripe.webhooks.constructEvent(rawBody, signature, STRIPE_WEBHOOK_SECRET)`
-**Body Parser:** DISABLED for this route (`config.api.bodyParser: false`)
-**Events Handled:**
-- `customer.subscription.created` → set `businesses.stripe_subscription_id`
-- `customer.subscription.updated` → update `businesses.status`
-...
-```
+[contents of required-stack.md]
 
-**Your implementation must:**
-- Use POST /api/webhook/stripe as the route
-- Use the exact verification pattern
-- Disable body parser
-- Handle all listed events
+---
 
-This eliminates guesswork and ensures consistency with deliberation decisions.
+## Current Piece
 
-## Implementation Rules
+Piece X.Y: [name]
+Type: [backend | frontend | fullstack]
 
-### Code Quality
+Dependencies: A.B, C.D
 
-1. **Follow the stack** — use technologies from required-stack.md
-2. **Follow the decisions** — implement exactly as specified in decision sections
-3. **Match existing patterns** — follow conventions in loaded files
-4. **TypeScript strict** — no `any` types, proper typing
-5. **Handle errors** — try/catch, error boundaries, proper responses
-6. **Keep it simple** — don't over-engineer, just meet criteria
+Acceptance:
+- [criterion 1]
+- [criterion 2]
+- [criterion 3]
 
-### File Organization
+---
 
-Follow Next.js 15 App Router conventions:
-- `app/` — routes and pages
-- `app/api/` — API routes
-- `components/` — React components
-- `lib/` — utilities and clients
-- `db/schema/` — Drizzle schemas
-- `types/` — TypeScript types
+## Relevant Decisions
 
-### Dependencies
+### AD-XXX: [name]
+[decision details]
 
-- Check if piece's dependencies are met in loaded code
-- If dependency piece created a file, it exists — use it
-- Don't recreate existing functionality
+### IS-XXX: [name]
+[integration spec]
 
-## UI Implementation Guidelines
+### DS-XXX: [name]
+[design refinement — only for frontend/fullstack]
 
-**For UI pieces (pages, components, layouts), follow these design quality standards:**
+---
+
+## Design Context
+[Only included for frontend/fullstack pieces]
 
 ### Typography
-- Use characterful fonts that match the project's tone (avoid defaulting to Inter/Roboto)
-- Establish a clear type scale and stick to it
-- Consider font pairing (display + body)
+[relevant sections]
 
-### Color & Theme
-- Use CSS variables for theming consistency
-- Commit to a cohesive color palette
-- Dominant colors with sharp accents > timid, evenly-distributed palettes
+### Spacing
+[relevant sections]
 
-### Motion & Interaction
-- Add meaningful micro-interactions (button feedback, hover states)
-- Consider page transitions and staggered reveals
-- Use CSS animations where possible, Framer Motion for complex interactions
+### Patterns
+[relevant layout/component/state patterns]
 
-### Spatial Composition
-- Use consistent spacing scale (Tailwind's built-in scale)
-- Consider asymmetry and negative space
-- Don't default to centered everything
+---
 
-### Backgrounds & Depth
-- Create atmosphere — gradient meshes, subtle textures, shadows
-- Avoid flat solid color backgrounds when richer alternatives fit
+## Relevant Code
 
-### Accessibility (REQUIRED)
-- Keyboard navigation on all interactive elements
-- Proper semantic HTML
-- ARIA labels where needed
-- Color contrast (WCAG AA)
-- Focus states visible
+### path/to/file.ts
+```typescript
+[file contents]
+```
 
-**Reference the component library specified in required-stack.md for consistent patterns.**
+### path/to/other.ts
+```typescript
+[file contents]
+```
+```
+
+## Behavior
+
+### For Backend Pieces
+
+1. Read acceptance criteria
+2. Check relevant decisions (AD-XXX, IS-XXX, EH-XXX)
+3. Implement following patterns from decisions
+4. Write clean, typed code
+5. Handle errors per EH-XXX patterns
+
+### For Frontend/Fullstack Pieces
+
+1. Read acceptance criteria
+2. Check relevant decisions including DS-XXX
+3. **Apply design-system.md patterns:**
+   - Use specified typography classes
+   - Use specified spacing values
+   - Follow layout patterns
+   - Implement state patterns (loading, empty, error)
+4. **Apply DS-XXX refinements** (override baseline when specified)
+5. Use shadcn/ui components
+6. Ensure accessibility
+
+## Design System Application
+
+### Typography
+```tsx
+// Page title
+<h1 className="text-2xl font-semibold">Dashboard</h1>
+
+// Section title
+<h2 className="text-lg font-medium">Recent Activity</h2>
+
+// Body text
+<p className="text-sm">Content here</p>
+
+// Caption
+<span className="text-xs text-muted-foreground">Updated 2 hours ago</span>
+```
+
+### Spacing
+```tsx
+// Page layout
+<div className="p-6">
+  <div className="flex flex-col gap-6">
+    {/* sections with gap-6 */}
+  </div>
+</div>
+
+// Card
+<Card className="p-4">
+  <div className="flex flex-col gap-4">
+    {/* elements with gap-4 */}
+  </div>
+</Card>
+```
+
+### DS-XXX Override Example
+
+If DS-001 says "Dashboard Card Density: p-3, gap-4":
+```tsx
+// Use DS-001 instead of baseline
+<Card className="p-3">  {/* DS-001: tighter padding */}
+  ...
+</Card>
+<div className="grid gap-4">  {/* DS-001: tighter gap */}
+  ...
+</div>
+```
 
 ## Output
 
-Write the necessary code files. No need to explain extensively — just write good code that meets the acceptance criteria.
+Code files that implement the piece:
+- Create new files as needed
+- Modify existing files if extending
+- Follow project structure conventions
 
-After writing code, output a brief summary:
+## Quality Checklist
 
-```markdown
-IMPLEMENTED: Piece [X.Y] — [name]
+Before completing:
 
-FILES CREATED:
-- [path] — [what it does]
+### All Pieces
+- [ ] Meets all acceptance criteria
+- [ ] Follows AD-XXX architecture decisions
+- [ ] Implements IS-XXX integration specs
+- [ ] Handles errors per EH-XXX patterns
+- [ ] TypeScript strict mode passes
+- [ ] No console.log (use proper logging)
 
-FILES MODIFIED:
-- [path] — [what changed]
+### Frontend/Fullstack Pieces
+- [ ] Uses design-system.md typography
+- [ ] Uses design-system.md spacing
+- [ ] Follows layout patterns
+- [ ] Implements loading states
+- [ ] Implements empty states
+- [ ] Implements error states
+- [ ] Applies DS-XXX refinements
+- [ ] Uses shadcn/ui components correctly
+- [ ] Keyboard accessible
+- [ ] Screen reader friendly
 
-DECISIONS IMPLEMENTED:
-- [ID]: [how implemented]
+## Example Implementation
 
-ACCEPTANCE CRITERIA STATUS:
-- [criterion 1]: Should pass ✓
-- [criterion 2]: Should pass ✓
-- [criterion 3]: Should pass ✓
-
-NOTES:
-- [any implementation notes for Verify agent]
-```
-
-## Handling Issues from Verify
-
-If you're re-implementing after Verify found issues:
-
-1. Read the ISSUES section from Verify's output
-2. Focus on fixing those specific issues
-3. Don't break things that were working
-4. Be targeted in your fixes
-
-## Examples
-
-### Example: Database Schema Piece
-
-```typescript
-// db/schema/businesses.ts
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-
-export const businesses = pgTable('businesses', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: text('user_id').notNull(),
-  name: text('name').notNull(),
-  // DM-001: stripe_subscription_id for webhook matching
-  stripeSubscriptionId: text('stripe_subscription_id'),
-  // DM-002: trial_started_at for trial expiration
-  trialStartedAt: timestamp('trial_started_at'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
-
-export type Business = typeof businesses.$inferSelect;
-export type NewBusiness = typeof businesses.$inferInsert;
-```
-
-### Example: API Route Piece
+### Backend Piece
 
 ```typescript
 // app/api/businesses/route.ts
-import { db } from '@/lib/db';
-import { businesses } from '@/db/schema/businesses';
-import { auth } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import { db } from '@/lib/db'
+import { businesses } from '@/db/schema'
+import { auth } from '@clerk/nextjs'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  
-  const result = await db.select().from(businesses).where(eq(businesses.userId, userId));
-  return NextResponse.json(result);
-}
-
-export async function POST(request: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  
-  const body = await request.json();
-  const [business] = await db.insert(businesses).values({
-    userId,
-    name: body.name,
-  }).returning();
-  
-  return NextResponse.json(business, { status: 201 });
-}
-```
-
-### Example: Integration Piece with Decision (IS-002)
-
-```typescript
-// app/api/webhook/stripe/route.ts
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
-import { db } from '@/lib/db';
-import { businesses } from '@/db/schema/businesses';
-import { stripeEvents } from '@/db/schema/stripe-events';
-import { eq } from 'drizzle-orm';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-// IS-002: Body parser DISABLED
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-export async function POST(request: Request) {
-  const body = await request.text();
-  const headersList = headers();
-  const signature = headersList.get('stripe-signature')!;
-  
-  let event: Stripe.Event;
-  
-  // IS-002: Signature verification
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    const { userId } = auth()
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },  // AD-002: API Response Format
+        { status: 401 }
+      )
+    }
+    
+    const data = await db
+      .select()
+      .from(businesses)
+      .where(eq(businesses.userId, userId))
+    
+    return NextResponse.json({ data })  // AD-002: API Response Format
+  } catch (error) {
+    console.error('Failed to fetch businesses:', error)  // EH-001: Error Logging
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
-  
-  // EH-002: Webhook replay protection
-  const existing = await db.select().from(stripeEvents).where(eq(stripeEvents.eventId, event.id));
-  if (existing.length > 0) {
-    // Already processed, acknowledge but skip
-    return NextResponse.json({ received: true });
-  }
-  
-  // Record event for idempotency
-  await db.insert(stripeEvents).values({ eventId: event.id });
-  
-  // IS-002: Handle events
-  switch (event.type) {
-    case 'customer.subscription.created':
-      // Set stripe_subscription_id
-      break;
-    case 'customer.subscription.updated':
-      // Update status
-      break;
-    case 'customer.subscription.deleted':
-      // Set status='churned'
-      break;
-    case 'invoice.payment_failed':
-      // Set status='payment_failed', trigger grace period
-      break;
-  }
-  
-  return NextResponse.json({ received: true });
 }
 ```
 
-### Example: UI Component Piece
+### Frontend Piece
 
-```typescript
-// components/dashboard/stats-card.tsx
-'use client';
+```tsx
+// app/dashboard/page.tsx
+import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-
-interface StatsCardProps {
-  title: string;
-  value: string | number;
-  description?: string;
-  icon?: React.ReactNode;
-  trend?: 'up' | 'down' | 'neutral';
-  className?: string;
-}
-
-export function StatsCard({ 
-  title, 
-  value, 
-  description, 
-  icon, 
-  trend,
-  className 
-}: StatsCardProps) {
+export default function DashboardPage() {
+  const { data, isLoading, error } = useBusinesses()
+  
+  if (error) {
+    return <ErrorState message="Failed to load dashboard" />  // State pattern
+  }
+  
   return (
-    <Card className={cn(
-      "transition-all duration-200 hover:shadow-md",
-      className
-    )}>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        {icon && (
-          <div className="h-4 w-4 text-muted-foreground">
-            {icon}
-          </div>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold tracking-tight">
-          {value}
+    <div className="p-6">  {/* design-system: Page padding */}
+      <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>  {/* Typography */}
+      
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">  {/* DS-001 */}
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />  {/* Loading state */}
+          ))}
         </div>
-        {description && (
-          <p className={cn(
-            "text-xs mt-1",
-            trend === 'up' && "text-green-600",
-            trend === 'down' && "text-red-600",
-            trend === 'neutral' && "text-muted-foreground"
-          )}>
-            {description}
-          </p>
-        )}
-      </CardContent>
-    </Card>
-  );
+      ) : data.length === 0 ? (
+        <EmptyState   {/* Empty state pattern */}
+          icon={<Building2 />}
+          title="No businesses yet"
+          description="Get started by adding your first business."
+          action={<Button>Add Business</Button>}
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">  {/* DS-001 */}
+          {data.map(business => (
+            <Card key={business.id} className="p-3">  {/* DS-001: tighter padding */}
+              <h3 className="text-lg font-medium">{business.name}</h3>  {/* Typography */}
+              <p className="text-xs text-muted-foreground">  {/* Typography: caption */}
+                {business.createdAt}
+              </p>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 ```
 
-## Common Patterns
+## Constraints
 
-### Clerk Auth Check
-```typescript
-const { userId } = await auth();
-if (!userId) {
-  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-}
-```
-
-### Drizzle Query
-```typescript
-const result = await db.select().from(table).where(eq(table.column, value));
-```
-
-### API Response
-```typescript
-return NextResponse.json(data, { status: 200 });
-return NextResponse.json({ error: 'Not found' }, { status: 404 });
-```
-
-## Don't
-
-- Don't add features not in acceptance criteria
-- Don't ignore decision sections — they are requirements
-- Don't refactor unrelated code
-- Don't add comments explaining obvious code
-- Don't create test files (unless piece is about tests)
-- Don't over-engineer for "future needs"
-- Don't use generic/boring design for UI pieces
+- Stay within acceptance criteria scope
+- Don't add features not in the piece
+- Don't modify files outside piece scope
+- Follow required-stack.md choices exactly
+- Apply design-system.md patterns (frontend/fullstack)
+- Apply DS-XXX refinements when specified

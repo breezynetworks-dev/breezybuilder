@@ -88,6 +88,20 @@ User Responses: [count]
 
 ---
 
+## Design Standards
+
+### DS-001: [Refinement Name]
+
+**Baseline:** [What design-system.md says]
+**Refinement:** [Project-specific override]
+**Rationale:** [Why baseline doesn't fit this project]
+**Applies To:** [Which pieces/pages use this refinement]
+**Implementation:**
+- [Specific CSS class or component change]
+- [Example code if helpful]
+
+---
+
 ## Deferred to Production
 
 | ID | Issue | Why Deferred | Monitoring Plan | Revisit Trigger |
@@ -106,5 +120,10 @@ User Responses: [count]
 - [Pattern 1]: [one-line description]
 - [Pattern 2]: [one-line description]
 
+### Design Overrides
+- DS-001: [one-line summary]
+- DS-002: [one-line summary]
+
 ### Critical Integrations
 - [Service 1]: [endpoint] — [purpose]
+- [Service 2]: [endpoint] — [purpose]

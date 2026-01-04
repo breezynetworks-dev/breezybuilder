@@ -1,163 +1,126 @@
----
-name: breezybuilder
-description: Production software from vision documents using multi-expert deliberation, atomic decomposition, and dumb execution loops. Use this skill when the user wants to build a complete software project from a vision/overview document, or when working with BreezyBuilder planning and execution files.
----
+# BreezyBuilder Skill
 
-# BreezyBuilder
-
-Build production software from vision documents with minimal user involvement.
-
-## Core Philosophy
-
-**Big projects don't need smart agents — they need small pieces and dumb loops.**
-
-- Fresh context per agent (prevents drift)
-- Exhaustion-based termination (prevents shallow work)
-- Atomic pieces (prevents context overflow)
-- Dumb loops (prevents clever failures)
+Build production software from a vision document. Big project, tiny pieces, dumb execution loop.
 
 ## Commands
 
-| Command | Purpose |
-|---------|---------|
-| `/breezybuilder:init` | Create .breezybuilder/ with config files |
-| `/breezybuilder:plan` | Run deliberation → decomposition → build-order |
-| `/breezybuilder:execute` | Build piece by piece following build-order |
+| Command | Description |
+|---------|-------------|
+| `/breezybuilder:init` | Initialize project with config files |
+| `/breezybuilder:plan` | Start planning (intake → deliberation → decomposition) |
+| `/breezybuilder:execute` | Start execution (requires build-order.md) |
 | `/breezybuilder:status` | Show current state |
-| `/breezybuilder:resume` | Continue from last known state |
+| `/breezybuilder:resume` | Resume from last known state |
 
 ## How It Works
 
-### Planning Phase
+1. **Init** — Create config files from global config (~/.breezybuilder/) or built-in defaults
+2. **Plan** — Multi-expert deliberation until exhausted, then decompose into atomic pieces
+3. **Execute** — For each piece: implement → verify → senior review. Fresh context every iteration.
 
-1. **Intake** — Ask targeted questions to fill gaps
-   - Infrastructure: LOCAL (Docker) or REMOTE (cloud services)
-   - Auth, payments, theme, platform based on overview gaps
-   - Creates enriched project-overview.md (Original Vision section preserves verbatim input)
+## Config Files
 
-2. **Deliberation** — 4 experts discuss WHAT to build until exhausted
-   - Analyst: Business logic, gaps, edge cases
-   - Architect: Tech decisions, implementation concerns
-   - Designer: UX flows, component structure, accessibility
-   - Senior Dev: Challenges all three, finds risks
-   - Minimum 5 rounds, continue until all say "NOTHING NEW"
+### Global Config (Optional)
+```
+~/.breezybuilder/
+├── required-stack.md      ← Your universal tech preferences
+├── potential-toolbox.md   ← Your curated tool catalog
+└── design-system.md       ← Your UI patterns
+```
 
-3. **Decisions Synthesis** — Extract structured decisions from deliberation
-   - Architecture decisions, integration specs, cost controls
-   - Error handling patterns, business rules
-   - Creates planning-decisions.md for downstream agents
-
-4. **User Synthesis** — Extract questions for user, decisions to confirm
-
-5. **Decomposition** — Same experts discuss HOW to break it up
-   - Phases, pieces, dependencies, demo points
-   - Same exhaustion pattern
-
-6. **Build Order** — Write execution plan with acceptance criteria
-   - References decision IDs for specific requirements
-
-### Execution Phase
-
-For each piece:
-1. **Code Select** — Identify relevant files AND decision sections (keep context small)
-2. **Implement** — Write code to meet acceptance criteria using decision specs
-3. **Verify** — Check criteria (need 2x VERIFIED)
-4. **Senior Review** — Final approval
-5. **Mark Complete** — Update build-order.md
-
-Demo points pause for user feedback. User can continue, provide feedback, or stop (MVP).
-
-## File Structure
-
+### Project Config
 ```
 .breezybuilder/
-├── required-stack.md          # Universal preferences (all projects)
-├── potential-toolbox.md       # Curated tool catalog
-├── filtered-toolbox.md        # Tools for THIS project
-├── project-overview.md        # Enriched overview (Original Vision preserves raw input)
+├── required-stack.md      ← From global or default
+├── potential-toolbox.md   ← From global or default
+├── design-system.md       ← From global or default
+├── project-overview.md    ← Your vision (created during plan)
 ├── planning/
 │   ├── planning-deliberation.md
-│   ├── planning-decisions.md  # Structured decisions for execution
+│   ├── planning-decisions.md
 │   └── planning-decomposition.md
 └── execution/
     ├── build-order.md
-    ├── demo-log.md
-    └── revisions/             # If major changes
-        ├── revision-XXX-deliberation.md
-        ├── revision-XXX-decisions.md
-        ├── revision-XXX-decomposition.md
-        └── revision-XXX-build-order.md
+    └── demo-log.md
 ```
 
-## Context Management
+## Core Principles
 
-- Target 80k tokens per agent (160k real limit)
-- Structured expert output (~60% token reduction)
-- Code selection loads only relevant files + decision sections
-- No summarization (lossy)
-- Files are state (no in-memory accumulation)
+| Principle | Why |
+|-----------|-----|
+| Fresh context per iteration | Prevents drift |
+| Exhaustion-based termination | Prevents shallow work |
+| Atomic pieces | Prevents context overflow |
+| Dumb loops | Prevents clever failures |
+| Design system | Consistent UI without decisions per piece |
 
-## Expert Output Format
+## Four Expert Roles
 
-Experts use structured format, not prose:
+| Role | Focus |
+|------|-------|
+| Analyst | Business logic gaps, edge cases |
+| Architect | Implementation, tech decisions |
+| Designer | UX flows, accessibility, DS-XXX proposals |
+| Senior Dev | Challenges all three, finds risks |
 
-```markdown
-### Analyst
+## Piece Types
 
-GAPS:
-- [gap]: [explanation]
+| Type | Description | Design Context |
+|------|-------------|----------------|
+| backend | API routes, DB, jobs | Skip |
+| frontend | UI components, pages | Load |
+| fullstack | API + UI combined | Load |
 
-EDGE CASES:
-- [edge case]
+## Decision Types
 
-QUESTIONS FOR USER:
-- [question]
+| Prefix | Category |
+|--------|----------|
+| AD-XXX | Architecture Decisions |
+| IS-XXX | Integration Specifications |
+| DM-XXX | Data Model Additions |
+| CC-XXX | Cost Controls |
+| EH-XXX | Error Handling Patterns |
+| BR-XXX | Business Rules |
+| DS-XXX | Design Standards (refinements) |
+| DP-XXX | Deferred to Production |
 
-NOTHING NEW:
-- [only when exhausted]
+## Execution Loop
+
 ```
-
-## Decisions Format
-
-planning-decisions.md structures all resolved decisions:
-
-```markdown
-## Architecture Decisions
-### AD-001: [name]
-**Decision:** [what]
-**Implementation:** [specific details]
-
-## Cost Controls
-| ID | Control | Limit | Enforcement |
-|CC-001| [what] | [limit] | [how] |
-
-## Error Handling Patterns
-### EH-001: [scenario]
-**Trigger:** [cause]
-**Response:** [action]
+For each piece:
+  Code Selector → identifies files + design context
+  Implement → builds the piece
+  Verify → checks criteria (2x required)
+  Senior Review → final approval
+  Mark complete → next piece
 ```
-
-Implement agents receive relevant decision sections to know exactly what to build.
-
-## Exhaustion Rule
-
-All 4 experts must say "NOTHING NEW" in the same round. If even one has something new, another round runs. Minimum 5 rounds before checking exhaustion.
 
 ## Demo Points
 
-User selects at decomposition:
-1. Full build — pause only at ship
+User chooses strategy:
+1. Full build — pause only at ship point
 2. Pause at every demo point
 3. Pause at specific demo points
 
-At each pause, user chooses: Continue / Feedback / Stop (MVP)
+At demo points:
+- Continue
+- Feedback (minor fix or major revision)
+- Stop here (MVP)
 
-## Revision Flow
+## Context Management
 
-Major feedback triggers:
-1. Create revision-XXX-deliberation.md
-2. Run focused deliberation on change
-3. Create revision-XXX-decisions.md (scoped to change)
-4. Update build-order.md
-5. Merge revision decisions into main planning-decisions.md
-6. Resume execution
+- Target 80k tokens per agent (of 200k available)
+- Design context only for frontend/fullstack pieces
+- Code selection filters to relevant files only
+- Decisions filtered to relevant sections only
+
+## Quick Start
+
+```
+/breezybuilder:init          # Set up config files
+# Review/edit config files
+/breezybuilder:plan          # Paste your overview, answer questions
+# Experts deliberate until exhausted
+# Choose demo strategy
+/breezybuilder:execute       # Build begins
+```
