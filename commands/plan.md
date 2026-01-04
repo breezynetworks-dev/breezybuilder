@@ -11,7 +11,9 @@ Orchestrate the full planning phase: intake → deliberation → decomposition �
 
 1. Verify `.breezybuilder/` exists with required-stack.md and potential-toolbox.md
    - If missing: "Run /breezybuilder:init first"
-2. Check if planning already complete (build-order.md exists)
+2. Verify `.breezybuilder/design-system.md` exists
+   - If missing: Warn and copy from built-in template
+3. Check if planning already complete (build-order.md exists)
    - If exists: "Planning already complete. Run /breezybuilder:execute to build, or delete .breezybuilder/execution/build-order.md to re-plan"
 
 ## Phase 1: Capture Raw Overview
@@ -390,15 +392,16 @@ Append to planning-deliberation.md:
    - Append output to planning-deliberation.md
 
 2. Invoke `breezybuilder-architect` subagent
-   - Pass: same files (now includes Analyst output)
+   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md
    - Append output to planning-deliberation.md
 
 3. Invoke `breezybuilder-designer` subagent
-   - Pass: same files (now includes Analyst + Architect output)
+   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md, **design-system.md**
+   - Designer uses design-system.md to identify baseline patterns and propose DS-XXX refinements
    - Append output to planning-deliberation.md
 
 4. Invoke `breezybuilder-senior-dev` subagent
-   - Pass: same files (now includes Analyst + Architect + Designer output)
+   - Pass: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md
    - Append output to planning-deliberation.md
 
 5. Check exhaustion (only if round >= 5):
@@ -416,10 +419,10 @@ Append to planning-deliberation.md:
 
 1. Invoke `breezybuilder-decisions-synthesizer` subagent
    - Pass: planning-deliberation.md, planning-decisions.md (if exists from prior cycle)
-   - Receive: structured decisions content
+   - Receive: structured decisions content (including DS-XXX from Designer)
    - Write to `.breezybuilder/planning/planning-decisions.md`
 
-This extracts architecture decisions, integration specs, cost controls, error handling patterns, and business rules into a structured format for downstream agents.
+This extracts architecture decisions, integration specs, cost controls, error handling patterns, business rules, and **design standards (DS-XXX)** into a structured format for downstream agents.
 
 ## Phase 6: Synthesize & Get User Input
 
@@ -468,10 +471,12 @@ This extracts architecture decisions, integration specs, cost controls, error ha
 2. Run decomposition loop (same pattern as deliberation):
    - Minimum 5 rounds
    - Same 4 experts with decomposition focus
-   - Pass to each expert: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md, planning-decisions.md, planning-decomposition.md
+   - Pass to Analyst, Architect, Senior Dev: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md, planning-decisions.md, planning-decomposition.md
+   - **Pass to Designer: all of the above PLUS design-system.md**
    - Check exhaustion after round 5 (all 4 must say "NOTHING NEW")
    - Experts focus on: pieces, dependencies, sequence, sizing, UI components
    - Experts MUST reference planning-decisions.md for specific requirements (limits, error handling, integration specs)
+   - **Designer recommends piece Types (backend/frontend/fullstack) and references DS-XXX decisions**
 
 3. After exhaustion, invoke `breezybuilder-decomposition-synthesizer`:
    - Extract phases, pieces, demo points
@@ -507,8 +512,8 @@ Capture user selection.
 ## Phase 9: Write Build Order
 
 1. Invoke `breezybuilder-build-order-writer` subagent
-   - Pass: planning-deliberation.md, planning-decisions.md, planning-decomposition.md, user's demo strategy selection
-   - Receive: complete build-order.md content
+   - Pass: planning-deliberation.md, planning-decisions.md (including DS-XXX), planning-decomposition.md, user's demo strategy selection
+   - Receive: complete build-order.md content with piece Types and decision references
 
 2. Write to `.breezybuilder/execution/build-order.md`
 
@@ -535,7 +540,7 @@ Infrastructure: [LOCAL/REMOTE]
 Created:
 - project-overview.md — enriched with product details + technical choices
 - planning-deliberation.md — [N] rounds of expert deliberation
-- planning-decisions.md — [N] decisions extracted
+- planning-decisions.md — [N] decisions extracted (including [N] DS-XXX design standards)
 - planning-decomposition.md — [N] rounds of decomposition
 - build-order.md — [N] phases, [N] pieces
 

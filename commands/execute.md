@@ -12,7 +12,9 @@ Orchestrate the execution phase: implement → verify → review each piece.
    - If missing: "Run /breezybuilder:plan first to create build order"
 2. Verify `.breezybuilder/planning/planning-decisions.md` exists
    - If missing: Warn but continue (older planning without decisions synthesis)
-3. Parse build-order.md to find current state
+3. Verify `.breezybuilder/design-system.md` exists
+   - If missing: Warn (frontend/fullstack pieces won't have design context)
+4. Parse build-order.md to find current state
    - Find first piece with `[ ]` (not complete)
    - If all pieces `[x]`: "Build complete! Project shipped. 🚀"
 
@@ -23,19 +25,32 @@ For each pending piece in build-order.md:
 ### Step 1: Select Code Context
 
 1. Invoke `breezybuilder-code-selector` subagent
-   - Pass: current piece section from build-order.md, project file structure, planning-decisions.md
-   - Receive: list of files to load, list of decision sections to load, estimated tokens
+   - Pass: current piece section from build-order.md (including Type), project file structure, planning-decisions.md, design-system.md
+   - Receive: 
+     - List of code files to load
+     - List of decision sections to load (AD-XXX, IS-XXX, etc.)
+     - Design context to load (for frontend/fullstack pieces only):
+       - Relevant design-system.md sections
+       - Relevant DS-XXX decisions
+     - Estimated tokens
 
 2. If estimated tokens > 50k:
    - Warn: "Piece may be too large. Consider splitting."
    - Ask user to continue or pause
 
-3. Load identified files AND decision sections into context for next steps
+3. Load identified files, decision sections, AND design context (if frontend/fullstack) into context for next steps
 
 ### Step 2: Implement
 
 1. Invoke `breezybuilder-implement` subagent
-   - Pass: required-stack.md, current piece (name, dependencies, acceptance criteria), relevant code files, relevant decision sections from planning-decisions.md
+   - Pass:
+     - required-stack.md
+     - Current piece (name, type, dependencies, acceptance criteria)
+     - Relevant code files (from Code Selector)
+     - Relevant decision sections from planning-decisions.md (from Code Selector)
+     - **Design context (for frontend/fullstack pieces only):**
+       - Relevant design-system.md sections
+       - Relevant DS-XXX decisions
    - Subagent writes code files directly to project
 
 2. Track: `verify_count = 0`
@@ -46,7 +61,12 @@ For each pending piece in build-order.md:
 Loop until 2x VERIFIED or max 10 attempts:
 
 1. Invoke `breezybuilder-verify` subagent
-   - Pass: current piece + acceptance criteria, relevant code files
+   - Pass: 
+     - Current piece + acceptance criteria
+     - Relevant code files
+     - **Design context (for frontend/fullstack pieces only):**
+       - Relevant design-system.md sections
+       - Relevant DS-XXX decisions
    - Receive: VERIFIED or ISSUES
 
 2. If VERIFIED:
@@ -56,7 +76,10 @@ Loop until 2x VERIFIED or max 10 attempts:
 
 3. If ISSUES:
    verify_count = 0
-   Invoke `breezybuilder-implement` subagent again with issues + decision sections
+   Invoke `breezybuilder-implement` subagent again with:
+     - Issues from Verify
+     - Decision sections
+     - **Design context (for frontend/fullstack pieces)**
    Continue loop
 
 4. If attempts >= 10:
@@ -72,7 +95,7 @@ Loop until 2x VERIFIED or max 10 attempts:
 
 2. If ISSUES:
    - Reset verify_count = 0
-   - Return to Step 2 (Implement) with issues
+   - Return to Step 2 (Implement) with issues + decision sections + design context
    - Loop continues
 
 3. If APPROVED:
@@ -170,10 +193,11 @@ When user indicates "Major" change at demo point:
 
 3. Run revision deliberation loop:
    - Same 4 experts, minimum 5 rounds
+   - Designer reads design-system.md for DS-XXX proposals
    - Focus: What needs to change? What's unaffected? New pieces needed?
 
 4. Run decisions synthesizer on revision deliberation:
-   - Creates revision-001-decisions.md (scoped to revision)
+   - Creates revision-001-decisions.md (scoped to revision, includes new DS-XXX)
 
 5. Run revision decomposition:
    - Extract: MODIFIED pieces, ADDED pieces, REMOVED pieces
@@ -234,4 +258,5 @@ When final piece completes:
 - If piece fails 10 verify attempts, pause for user decision
 - If code selector finds no relevant files, warn and ask to continue
 - If planning-decisions.md missing, warn but continue without decision sections
+- If design-system.md missing, warn but continue without design context (frontend/fullstack pieces may have inconsistent styling)
 - Track all errors in demo-log.md for debugging
