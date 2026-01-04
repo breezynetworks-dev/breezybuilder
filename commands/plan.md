@@ -18,31 +18,49 @@ Orchestrate the full planning phase: intake → deliberation → decomposition �
 
 1. Prompt user: "Paste your project overview. This can be prose, feature lists, user stories, or any description of what you want to build. Type END on a new line when done."
 2. Capture all input until END
-3. Write to `.breezybuilder/project-overview-raw.md`:
-   ```markdown
-   # Project Overview (Raw)
-   
-   Captured: [timestamp]
-   Source: User input via /breezybuilder:plan
-   
-   ---
-   
-   [USER'S PASTED CONTENT VERBATIM]
-   ```
+3. Save temporarily for intake processing (will be deleted after enriched overview is created)
 
-Note: This raw file is IMMUTABLE. It preserves the user's original input for audit.
+Note: The raw overview is preserved verbatim in the enriched overview's "Original Vision" section.
 
 ## Phase 2: Intake
 
-The intake phase fills gaps in the overview with targeted questions.
+The intake phase fills gaps in the overview with targeted questions—both product and technical.
 
 ### 2.1 Parse Overview
 
 1. Invoke `breezybuilder-overview-parser` subagent
-   - Pass: project-overview-raw.md, potential-toolbox.md
-   - Receive: analysis with detected features, gaps, and questions to ask
+   - Pass: raw overview text, potential-toolbox.md
+   - Receive: analysis with detected features, gaps, and technical questions to ask
 
-### 2.2 Ask Infrastructure Question (MANDATORY)
+### 2.2 Project Manager (Product Questions)
+
+**NEW: Ask product questions before technical questions.**
+
+1. Present transition to user:
+   ```
+   ═══════════════════════════════════════════════════════════════
+   UNDERSTANDING YOUR PRODUCT
+   ═══════════════════════════════════════════════════════════════
+   
+   I've analyzed your overview. To make sure I understand your 
+   product correctly, I have a few questions...
+   ```
+
+2. Invoke `breezybuilder-project-manager` subagent
+   - Pass: raw overview text, overview-parser analysis
+   - PM asks contextual questions about:
+     - Core action (what users primarily do)
+     - Pages/screens that exist
+     - Navigation pattern
+     - Entry point after login
+     - User types/roles
+     - Business model
+   - PM catches contradictions in real-time:
+     - If user answer contradicts original overview, PM asks for clarification
+     - Resolved contradictions are logged to Clarifications section
+   - Receive: product details, clarifications, skipped categories
+
+### 2.3 Ask Infrastructure Question (MANDATORY)
 
 Always ask this question regardless of overview content:
 
@@ -72,9 +90,9 @@ Your choice [1/2]:
 
 Capture response.
 
-### 2.3 Ask Conditional Questions
+### 2.4 Ask Conditional Technical Questions
 
-Based on overview-parser analysis, ask questions for unspecified items:
+Based on overview-parser analysis, ask questions for unspecified technical items:
 
 - Only ask what's NOT already in the overview
 - Maximum 6 conditional questions
@@ -100,7 +118,7 @@ Which auth provider? [Clerk/NextAuth]:
 
 Collect all answers.
 
-### 2.4 Create Environment Files (ALWAYS)
+### 2.5 Create Environment Files (ALWAYS)
 
 Even LOCAL mode needs API keys for services without local alternatives.
 
@@ -171,7 +189,7 @@ Even LOCAL mode needs API keys for services without local alternatives.
    - If user types anything else, remind them to complete setup
    - Loop until READY received
 
-### 2.5 Verify Environment
+### 2.6 Verify Environment
 
 After user types READY, verify everything works before proceeding:
 
@@ -236,51 +254,70 @@ Handle user response:
 - SKIP: Warn strongly, require "YES" confirmation, then proceed
 - ABORT: Exit planning
 
-### 2.6 Create Enriched Overview
+### 2.7 Create Enriched Overview
 
 Write to `.breezybuilder/project-overview.md`:
 
 ```markdown
 # Project Overview
 
-Captured: [timestamp]
-Source: User input via /breezybuilder:plan
-Enriched: [timestamp] via intake
+Generated: [timestamp]
+PM Questions: [N]
+Clarifications: [N]
 
 ---
 
 ## Original Vision
 
-[CONTENT FROM project-overview-raw.md]
+[RAW OVERVIEW TEXT VERBATIM — never edited]
 
 ---
 
-## Intake Decisions
+## Clarifications
 
-### Infrastructure
-- Mode: [LOCAL/REMOTE]
-- Services: [Docker Compose / Cloud services]
-- .env required: [Yes/No]
+[Only present if PM resolved contradictions]
 
-### Visual Design
-- Theme: [Dark/Light/System toggle]
+- "[original text]" → [corrected understanding] (PM Q[N])
+- "[original text]" → [corrected understanding] (PM Q[N])
 
-### Authentication
-- Provider: [Clerk/NextAuth/None]
-- Features: [social login, etc. if specified]
+---
 
-### Payments
-- Provider: [Stripe/None]
-- Model: [subscription/one-time/usage-based]
+## Product Details
 
-### Platform
-- Target: [Web desktop-first / Web mobile-first / PWA]
+Core Action: [from PM]
+Pages/Screens: [from PM]
+Navigation: [from PM]
+Entry Point: [from PM]
+User Types: [from PM]
+Business Model: [from PM]
 
-### User Structure
-- Type: [B2C individual / B2B teams]
+[Additional details from PM conversation]
 
-### Notifications
-- Email: [Provider or None]
+---
+
+## Technical Choices
+
+Infrastructure: [LOCAL/REMOTE]
+Auth Provider: [Clerk/NextAuth/None]
+Payment Provider: [Stripe/None]
+Email Provider: [Resend/None]
+Theme: [Dark/Light/System toggle]
+Platform: [Web desktop-first / Web mobile-first / PWA]
+
+---
+
+## Detected Signals
+
+[From Overview Parser]
+
+Detected (explicitly mentioned):
+- [CATEGORY]: "[quote]" (line N)
+
+Implied (likely needed):
+- [CATEGORY]: [reasoning]
+
+Not Mentioned (asked user):
+- [CATEGORY]: [user's choice]
 
 ---
 
@@ -289,7 +326,6 @@ Enriched: [timestamp] via intake
 Based on intake, this project will use:
 - [Tool 1] for [purpose]
 - [Tool 2] for [purpose]
-- [etc.]
 
 ---
 
@@ -310,7 +346,11 @@ Environment variables configured. See .env.requirements.md.
 
 This enriched overview is now IMMUTABLE for the rest of planning.
 
-### 2.7 Create Deliberation File
+### 2.8 Cleanup
+
+Delete the temporary raw overview file. The "Original Vision" section in project-overview.md now contains the verbatim original input.
+
+### 2.9 Create Deliberation File
 
 Create empty `.breezybuilder/planning/planning-deliberation.md`:
 ```markdown
@@ -493,8 +533,7 @@ Output to user:
 Infrastructure: [LOCAL/REMOTE]
 
 Created:
-- project-overview-raw.md — original input (preserved)
-- project-overview.md — enriched with intake decisions
+- project-overview.md — enriched with product details + technical choices
 - planning-deliberation.md — [N] rounds of expert deliberation
 - planning-decisions.md — [N] decisions extracted
 - planning-decomposition.md — [N] rounds of decomposition
