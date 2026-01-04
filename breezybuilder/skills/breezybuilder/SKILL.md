@@ -30,10 +30,11 @@ Build production software from vision documents with minimal user involvement.
 
 ### Planning Phase
 
-1. **Deliberation** — 3 experts discuss WHAT to build until exhausted
+1. **Deliberation** — 4 experts discuss WHAT to build until exhausted
    - Analyst: Business logic, gaps, edge cases
    - Architect: Tech decisions, implementation concerns
-   - Senior Dev: Challenges both, finds risks
+   - Designer: UX flows, component structure, accessibility
+   - Senior Dev: Challenges all three, finds risks
    - Minimum 5 rounds, continue until all say "NOTHING NEW"
 
 2. **Decisions Synthesis** — Extract structured decisions from deliberation
@@ -131,7 +132,7 @@ Implement agents receive relevant decision sections to know exactly what to buil
 
 ## Exhaustion Rule
 
-All 3 experts must say "NOTHING NEW" in the same round. If even one has something new, another round runs. Minimum 5 rounds before checking exhaustion.
+All 4 experts must say "NOTHING NEW" in the same round. If even one has something new, another round runs. Minimum 5 rounds before checking exhaustion.
 
 ## Demo Points
 
