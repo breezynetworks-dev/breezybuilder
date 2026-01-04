@@ -67,16 +67,20 @@ Append to planning-deliberation.md:
    - Pass: same files (now includes Analyst output)
    - Append output to planning-deliberation.md
 
-3. Invoke `breezybuilder-senior-dev` subagent
+3. Invoke `breezybuilder-designer` subagent
    - Pass: same files (now includes Analyst + Architect output)
    - Append output to planning-deliberation.md
 
-4. Check exhaustion (only if round >= 5):
+4. Invoke `breezybuilder-senior-dev` subagent
+   - Pass: same files (now includes Analyst + Architect + Designer output)
+   - Append output to planning-deliberation.md
+
+5. Check exhaustion (only if round >= 5):
    - Read latest round from planning-deliberation.md
-   - If all 3 experts said "NOTHING NEW": exhaustion_count += 1
+   - If all 4 experts said "NOTHING NEW": exhaustion_count += 1
    - Else: exhaustion_count = 0
    
-5. If exhaustion_count >= 1 AND round >= 5:
+6. If exhaustion_count >= 1 AND round >= 5:
    - Break loop (experts exhausted)
 ```
 
@@ -137,9 +141,9 @@ This extracts architecture decisions, integration specs, cost controls, error ha
 
 2. Run decomposition loop (same pattern as deliberation):
    - Minimum 5 rounds
-   - Same 3 experts with decomposition focus
-   - Check exhaustion after round 5
-   - Experts focus on: pieces, dependencies, sequence, sizing
+   - Same 4 experts with decomposition focus
+   - Check exhaustion after round 5 (all 4 must say "NOTHING NEW")
+   - Experts focus on: pieces, dependencies, sequence, sizing, UI components
    - Experts can reference planning-decisions.md for specific requirements
 
 3. After exhaustion, invoke `breezybuilder-decomposition-synthesizer`:

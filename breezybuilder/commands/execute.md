@@ -169,7 +169,7 @@ When user indicates "Major" change at demo point:
    ```
 
 3. Run revision deliberation loop:
-   - Same 3 experts, minimum 5 rounds
+   - Same 4 experts, minimum 5 rounds
    - Focus: What needs to change? What's unaffected? New pieces needed?
 
 4. Run decisions synthesizer on revision deliberation:
