@@ -142,9 +142,10 @@ This extracts architecture decisions, integration specs, cost controls, error ha
 2. Run decomposition loop (same pattern as deliberation):
    - Minimum 5 rounds
    - Same 4 experts with decomposition focus
+   - Pass to each expert: required-stack.md, filtered-toolbox.md, project-overview.md, planning-deliberation.md, planning-decisions.md, planning-decomposition.md
    - Check exhaustion after round 5 (all 4 must say "NOTHING NEW")
    - Experts focus on: pieces, dependencies, sequence, sizing, UI components
-   - Experts can reference planning-decisions.md for specific requirements
+   - Experts MUST reference planning-decisions.md for specific requirements (limits, error handling, integration specs)
 
 3. After exhaustion, invoke `breezybuilder-decomposition-synthesizer`:
    - Extract phases, pieces, demo points
