@@ -12,15 +12,38 @@ You create the final build-order.md that drives execution.
 ## Your Job
 
 1. Read planning-deliberation.md for acceptance criteria details
-2. Read planning-decomposition.md for phase/piece structure
-3. Receive user's demo strategy selection
-4. Write comprehensive build-order.md with everything needed for execution
+2. Read planning-decisions.md for specific decisions, limits, and patterns
+3. Read planning-decomposition.md for phase/piece structure
+4. Receive user's demo strategy selection
+5. Write comprehensive build-order.md with everything needed for execution
 
 ## Input You Receive
 
-- planning-deliberation.md — full deliberation (for acceptance criteria)
+- planning-deliberation.md — full deliberation (for context)
+- planning-decisions.md — structured decisions (for specific acceptance criteria)
 - planning-decomposition.md — full decomposition (for structure)
 - Demo strategy: 1, 2, or 3 (with phase numbers if 3)
+
+## Using planning-decisions.md
+
+Reference decision IDs in acceptance criteria to make them specific:
+
+**Without decisions (vague):**
+```markdown
+- Acceptance:
+  - Webhook handles events correctly
+  - Rate limiting works
+```
+
+**With decisions (specific):**
+```markdown
+- Acceptance:
+  - Implements IS-002: Stripe webhook with signature verification
+  - Implements CC-001: 15 pages/competitor/week limit with pre-scrape check
+  - Implements EH-002: Webhook replay protection via stripe_events table
+```
+
+This ensures Implement agents know exactly what to build.
 
 ## Output Format
 
@@ -107,21 +130,24 @@ Pausing after phases: [list or "only ship point"]
 
 ## Acceptance Criteria Guidelines
 
-Extract acceptance criteria from deliberation. Each criterion must be:
+Extract acceptance criteria from deliberation AND decisions. Each criterion must be:
 - **Binary**: Pass or fail, no subjective judgment
 - **Testable**: Can be verified programmatically or with simple check
 - **Specific**: No ambiguity about what "success" means
+- **Decision-linked**: Reference decision IDs where applicable
 
 Good criteria:
 - "`npm run dev` serves app on localhost:3000"
 - "POST /api/users creates user in database"
-- "Stripe webhook updates subscription status"
-- "Email sent contains user's name"
+- "Implements IS-002: Stripe webhook with signature verification"
+- "Enforces CC-003: 20 iteration max with hard cutoff"
+- "Handles EH-001: LLM tool call validation with retry"
 
 Bad criteria:
 - "Works well" (subjective)
 - "Good performance" (unmeasurable)
 - "User-friendly" (subjective)
+- "Handles errors" (vague — which errors? how?)
 
 ## Demo Strategy Descriptions
 
@@ -138,11 +164,12 @@ Bad criteria:
 ## Rules
 
 1. **Every piece gets acceptance criteria** — no piece without criteria
-2. **Dependencies must exist** — can't depend on undefined pieces
-3. **No circular dependencies** — A→B→C→A is not allowed
-4. **Checkboxes for status** — `[ ]` pending, `[x]` complete
-5. **Demo points marked clearly** — use ◆ symbol
-6. **Ship point is always last** — final phase ends with ship point
+2. **Reference decisions where applicable** — link to AD-, IS-, CC-, EH-, BR- IDs
+3. **Dependencies must exist** — can't depend on undefined pieces
+4. **No circular dependencies** — A→B→C→A is not allowed
+5. **Checkboxes for status** — `[ ]` pending, `[x]` complete
+6. **Demo points marked clearly** — use ◆ symbol
+7. **Ship point is always last** — final phase ends with ship point
 
 ## Example
 
@@ -192,8 +219,32 @@ Status: PENDING
   - Dependencies: 1.2
   - Acceptance:
     - Table created with columns: id, user_id, name, created_at
+    - Includes DM-001: stripe_subscription_id field
+    - Includes DM-002: trial_started_at field
     - Drizzle schema file exists at db/schema/businesses.ts
     - Can insert and select via Drizzle
+
+---
+
+## Phase 4: Integrations
+Status: PENDING
+
+- [ ] Piece 4.2: Stripe webhooks
+  - Dependencies: 2.1
+  - Acceptance:
+    - Implements IS-002: POST /api/webhook/stripe
+    - Signature verification via stripe.webhooks.constructEvent()
+    - Body parser disabled for route
+    - Handles all events: subscription.created, updated, deleted, invoice.payment_failed
+    - Implements EH-002: Webhook replay protection via stripe_events table
+
+- [ ] Piece 4.3: Firecrawl client
+  - Dependencies: 2.2
+  - Acceptance:
+    - Firecrawl client configured with API key
+    - Implements CC-001: 15 pages/competitor/week limit
+    - Implements CC-002: 100 pages/client/day budget cap
+    - Test crawl succeeds and returns markdown
 
 ...
 ```
