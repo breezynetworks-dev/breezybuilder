@@ -36,19 +36,25 @@ Build production software from vision documents with minimal user involvement.
    - Senior Dev: Challenges both, finds risks
    - Minimum 5 rounds, continue until all say "NOTHING NEW"
 
-2. **Synthesis** — Extract questions for user, decisions to confirm
+2. **Decisions Synthesis** — Extract structured decisions from deliberation
+   - Architecture decisions, integration specs, cost controls
+   - Error handling patterns, business rules
+   - Creates planning-decisions.md for downstream agents
 
-3. **Decomposition** — Same experts discuss HOW to break it up
+3. **User Synthesis** — Extract questions for user, decisions to confirm
+
+4. **Decomposition** — Same experts discuss HOW to break it up
    - Phases, pieces, dependencies, demo points
    - Same exhaustion pattern
 
-4. **Build Order** — Write execution plan with acceptance criteria
+5. **Build Order** — Write execution plan with acceptance criteria
+   - References decision IDs for specific requirements
 
 ### Execution Phase
 
 For each piece:
-1. **Code Select** — Identify relevant files (keep context small)
-2. **Implement** — Write code to meet acceptance criteria
+1. **Code Select** — Identify relevant files AND decision sections (keep context small)
+2. **Implement** — Write code to meet acceptance criteria using decision specs
 3. **Verify** — Check criteria (need 2x VERIFIED)
 4. **Senior Review** — Final approval
 5. **Mark Complete** — Update build-order.md
@@ -65,6 +71,7 @@ Demo points pause for user feedback. User can continue, provide feedback, or sto
 ├── project-overview.md        # User's vision
 ├── planning/
 │   ├── planning-deliberation.md
+│   ├── planning-decisions.md  # Structured decisions for execution
 │   └── planning-decomposition.md
 └── execution/
     ├── build-order.md
@@ -76,7 +83,7 @@ Demo points pause for user feedback. User can continue, provide feedback, or sto
 
 - Target 80k tokens per agent (160k real limit)
 - Structured expert output (~60% token reduction)
-- Code selection loads only relevant files
+- Code selection loads only relevant files + decision sections
 - No summarization (lossy)
 - Files are state (no in-memory accumulation)
 
@@ -100,6 +107,28 @@ NOTHING NEW:
 - [only when exhausted]
 ```
 
+## Decisions Format
+
+planning-decisions.md structures all resolved decisions:
+
+```markdown
+## Architecture Decisions
+### AD-001: [name]
+**Decision:** [what]
+**Implementation:** [specific details]
+
+## Cost Controls
+| ID | Control | Limit | Enforcement |
+|CC-001| [what] | [limit] | [how] |
+
+## Error Handling Patterns
+### EH-001: [scenario]
+**Trigger:** [cause]
+**Response:** [action]
+```
+
+Implement agents receive relevant decision sections to know exactly what to build.
+
 ## Exhaustion Rule
 
 All 3 experts must say "NOTHING NEW" in the same round. If even one has something new, another round runs. Minimum 5 rounds before checking exhaustion.
@@ -118,5 +147,6 @@ At each pause, user chooses: Continue / Feedback / Stop (MVP)
 Major feedback triggers:
 1. Create revision-XXX-deliberation.md
 2. Run focused deliberation on change
-3. Update build-order.md
-4. Resume execution
+3. Create revision-XXX-decisions.md (scoped to change)
+4. Update build-order.md
+5. Resume execution
