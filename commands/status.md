@@ -12,94 +12,72 @@ Show the current state of BreezyBuilder for this project.
    - If `.breezybuilder/` doesn't exist:
      ```
      BreezyBuilder: Not initialized
-     
+
      Run /breezybuilder:init to get started.
      ```
 
 2. **Initialized, not planned**
-   - If `.breezybuilder/` exists but no planning-deliberation.md:
+   - If `.breezybuilder/` exists but no deliberation.md:
      ```
      BreezyBuilder: Initialized
-     
-     ✓ defaults.md
-     ✓ potential-toolbox.md
-     ✓ design-system.md
-     
+
+     ✓ preferences.md
+
      Next: Run /breezybuilder:plan to start planning.
      ```
 
 3. **Planning in progress**
-   - If planning-deliberation.md exists but no build-order.md:
+   - If deliberation.md exists but no pieces.md:
      ```
      BreezyBuilder: Planning in progress
-     
-     Project Type: [Web App / Python / etc.]
-     
+
+     Project Type: [Web App / Python / CLI / Backend]
+
      Deliberation: Round [N]
-     - Analyst: [done/pending]
-     - Architect: [done/pending]
-     - Designer: [done/pending]
-     - Senior Dev: [done/pending]
-     
-     Decisions: [not synthesized / [N] decisions extracted]
-     
-     Decomposition: [not started / Round N]
-     
+     - Developer: [done/pending]
+     - Designer: [done/pending/skipped]
+     - Product: [done/pending]
+
+     Spec: [not written / written]
+
      Next: Run /breezybuilder:plan to continue.
      ```
 
 4. **Planning complete, not executing**
-   - If build-order.md exists but execution not started:
+   - If pieces.md exists but execution not started:
      ```
      BreezyBuilder: Ready to execute
-     
-     Project Type: [Web App / Python / etc.]
-     Infrastructure: [LOCAL / REMOTE]
-     
+
      Planning:
      - Deliberation: [N] rounds
-     - Decisions: [N] extracted (AD: [n], IS: [n], DS: [n], CC: [n], EH: [n], BR: [n], DM: [n], DP: [n])
-     - Decomposition: [N] rounds
-     
+     - Spec: written
+     - Pieces: [N] total
+
      Build Order:
      - Phases: [N]
      - Pieces: [N] (backend: [n], frontend: [n], fullstack: [n])
      - Demo points: [N]
-     
+
      Next: Run /breezybuilder:execute to start building.
      ```
 
 5. **Execution in progress**
-   - Parse build-order.md for progress:
+   - Parse pieces.md for progress:
      ```
      BreezyBuilder: Executing
-     
-     Project Type: [Web App / Python / etc.]
-     Infrastructure: [LOCAL / REMOTE]
-     
+
      Progress:
      - Phase [X] of [N]: [name]
      - Piece [Y] of [M]: [name]
      - Overall: [%] complete
-     
+
      Current piece: [name]
      - Type: [backend / frontend / fullstack]
-     - Dependencies: [list]
-     - Status: [implementing/verifying/reviewing]
-     - Decision refs: [IDs referenced in acceptance criteria]
-     
-     Completed phases:
-     - Phase 1: [name] ✓
-     - Phase 2: [name] ✓
-     
-     Pieces completed:
-     - Backend: [n] / [total]
-     - Frontend: [n] / [total]
-     - Fullstack: [n] / [total]
-     
-     Demo points reached: [N]
-     Revisions: [N]
-     
+     - Status: [implementing/verifying]
+
+     Completed:
+     - Pieces: [n] / [total]
+
      Next: Run /breezybuilder:execute to continue.
      ```
 
@@ -107,38 +85,23 @@ Show the current state of BreezyBuilder for this project.
    - If all pieces marked `[x]`:
      ```
      BreezyBuilder: Complete 🚀
-     
-     Project Type: [Web App / Python / etc.]
-     Infrastructure: [LOCAL / REMOTE]
-     
+
      Summary:
      - Phases: [N] ✓
-     - Pieces: [N] ✓ (backend: [n], frontend: [n], fullstack: [n])
-     - Decisions implemented: [N]
-     - DS-XXX design standards: [N]
-     - Demo points: [N]
-     - Revisions: [N]
-     
-     Shipped: [timestamp]
-     
-     Audit trail available in .breezybuilder/
+     - Pieces: [N] ✓
+
+     Files:
+     - overview.md — original vision
+     - deliberation.md — expert discussion
+     - spec.md — resolved spec
+     - pieces.md — build order
+
+     Project ready.
      ```
 
 ## Parse Logic
 
-- Read project type from project-overview.md "Technical Choices" section
-- Count `[x]` vs `[ ]` in build-order.md for progress
-- Parse piece Types from build-order.md for type breakdown
-- Check phase "Status:" lines for phase progress
-- Count decision sections in planning-decisions.md by prefix:
-  - AD- (Architecture Decisions)
-  - IS- (Integration Specifications)
-  - DS- (Design Standards)
-  - CC- (Cost Controls)
-  - EH- (Error Handling)
-  - BR- (Business Rules)
-  - DM- (Data Model)
-  - DP- (Deferred to Production)
-- Look for latest entry in demo-log.md for demo point status
-- Count revision-* folders for revision count
-- Scan current piece acceptance criteria for decision ID references
+- Count `[x]` vs `[ ]` in pieces.md for progress
+- Parse piece Types from pieces.md for type breakdown
+- Check phase headers for phase progress
+- Count rounds in deliberation.md

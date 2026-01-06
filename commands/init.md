@@ -1,5 +1,5 @@
 ---
-description: Initialize BreezyBuilder in the current project. Creates .breezybuilder/ directory with defaults.md, potential-toolbox.md, and design-system.md from your global config (~/.breezybuilder/) or built-in defaults.
+description: Initialize BreezyBuilder in the current project. Creates .breezybuilder/ directory with preferences.md from your global config (~/.breezybuilder/) or built-in defaults.
 ---
 
 # BreezyBuilder Init
@@ -9,82 +9,88 @@ Initialize BreezyBuilder for this project.
 ## Steps
 
 1. **Check if already initialized**
-   - If `.breezybuilder/` exists with files, inform user:
+   - If `.breezybuilder/` exists with preferences.md:
      "BreezyBuilder already initialized. Run /breezybuilder:plan to start planning, or delete .breezybuilder/ to reset."
    - Exit if already initialized
 
 2. **Create directory structure**
    ```
    .breezybuilder/
-   ├── defaults.md            ← Your preferences by project type
-   ├── potential-toolbox.md   ← Your curated tool catalog
-   ├── design-system.md       ← Your UI patterns
-   ├── planning/
-   └── execution/
+   └── preferences.md    ← Your preferences (Developer, Designer, Product)
    ```
 
-3. **Copy config files (with global config precedence)**
-   
-   For each file (defaults.md, potential-toolbox.md, design-system.md):
+3. **Copy preferences.md (with global config precedence)**
+
    ```
-   if ~/.breezybuilder/{file} exists:
-       Copy from ~/.breezybuilder/{file}
+   if ~/.breezybuilder/preferences.md exists:
+       Copy from ~/.breezybuilder/preferences.md
        Note: "Using global config"
    else:
-       Copy from plugin's templates/ directory
+       Copy from plugin's templates/preferences.md
        Note: "Using built-in default"
    ```
 
 4. **Output to user**
    ```
    ✓ BreezyBuilder initialized
-   
+
    Created:
-   - .breezybuilder/defaults.md — [Using global config | Using built-in default]
-   - .breezybuilder/potential-toolbox.md — [Using global config | Using built-in default]
-   - .breezybuilder/design-system.md — [Using global config | Using built-in default]
-   
+   - .breezybuilder/preferences.md — [Using global config | Using built-in default]
+
    Global config location: ~/.breezybuilder/
-   
+
    To set up global config (recommended):
    1. Create ~/.breezybuilder/ directory
-   2. Copy and customize files you want to reuse across projects
+   2. Copy and customize preferences.md
    3. Future projects will use your global config automatically
-   
+
    Next steps:
-   1. Review the config files — Do they match your preferences?
+   1. Review preferences.md — Does it match your style?
    2. Run /breezybuilder:plan to start planning your project
    ```
 
 ## Global Config
 
-Users can create `~/.breezybuilder/` with their preferred configs:
+Users can create `~/.breezybuilder/` with their preferred config:
 
 ```
 ~/.breezybuilder/
-├── defaults.md            ← Your preferences by project type
-├── potential-toolbox.md   ← Your curated tool catalog
-└── design-system.md       ← Your UI patterns
+└── preferences.md    ← Your preferences
 ```
 
-**Precedence:** Global config → Built-in templates
+**Precedence:** Global config → Built-in template
 
 This allows users to:
 - Set up once, reuse everywhere
 - Maintain consistent preferences across projects
-- Build a personal toolbox over time
-- Define UI patterns that match their style
+- Customize their stack, tools, and design patterns
 
-## Default Templates
+## preferences.md Structure
 
-If no global config exists, use built-in defaults from the plugin's `templates/` directory:
-- `templates/defaults.md`
-- `templates/potential-toolbox.md`
-- `templates/design-system.md`
+The preferences file has three sections, one for each expert:
 
-## Migration from required-stack.md
+```markdown
+## Developer
+- Philosophy (simple over clever, etc.)
+- Stack defaults (framework, language, etc.)
+- Tools I like (database, auth, payments, etc.)
 
-If upgrading from an older version with `required-stack.md`:
-- The new `defaults.md` replaces it
-- Stack choices are now made during intake based on project type
-- Specific tool choices (auth, payments, etc.) come from toolbox
+## Designer
+- Philosophy (minimal, content-first, etc.)
+- Typography patterns
+- Spacing patterns
+- Layout patterns
+- Component patterns
+- State patterns (loading, empty, error)
+- Accessibility requirements
+
+## Product
+- Philosophy (ship fast, iterate, etc.)
+- Project type detection hints
+- Questions that matter to you
+- Scope preferences
+```
+
+## Default Template
+
+If no global config exists, use built-in default from the plugin's `templates/preferences.md`.

@@ -11,26 +11,24 @@ Resume from the last known state. Useful if a session was interrupted.
 1. **Check for .breezybuilder/**
    - If missing: "Nothing to resume. Run /breezybuilder:init to start."
 
-2. **Check execution state** (if build-order.md exists)
+2. **Check execution state** (if pieces.md exists)
    - Find first `[ ]` piece
    - If found: Resume execution at that piece
    - If all `[x]`: "Build already complete. Nothing to resume."
 
-3. **Check decomposition state** (if planning-decomposition.md exists but no build-order.md)
-   - Check if decomposition exhausted
-   - If not: Resume decomposition loop
-   - If exhausted but no build-order: Generate build-order
+3. **Check planning state** (if deliberation.md exists but no pieces.md)
+   - Check if spec.md exists
+   - If no spec: Resume at write spec
+   - If spec exists: Resume at write pieces
 
-4. **Check deliberation state** (if planning-deliberation.md exists but no decomposition)
+4. **Check deliberation state** (if deliberation.md exists but incomplete)
    - Count rounds, check last round for exhaustion
    - If not exhausted: Resume deliberation loop
-   - If exhausted but no planning-decisions.md: Run decisions synthesizer first
-   - If exhausted: Run deliberation synthesizer, proceed to decomposition
 
-5. **Check for project-overview.md** (if exists but no deliberation)
-   - Resume at toolbox filter → deliberation
+5. **Check for overview.md** (if exists but no deliberation)
+   - Resume at deliberation phase
 
-6. **Only defaults.md and potential-toolbox.md**
+6. **Only preferences.md exists**
    - "Initialized but no project overview. Run /breezybuilder:plan to start planning."
 
 ## Resume Actions
@@ -40,50 +38,51 @@ Resume from the last known state. Useful if a session was interrupted.
 ```
 Resuming deliberation...
 
-Project Type: [Web App / Python / etc.]
-
 Last state:
 - Round: [N]
-- Last expert: [Analyst/Architect/Designer/Senior Dev]
-- Decisions synthesized: [yes/no]
+- Last expert: [Developer/Designer/Product]
 
 Continuing from Round [N+1]...
 ```
 
 Then run deliberation loop from current round.
 
-### Resume Decomposition
+### Resume Spec Writing
 
 ```
-Resuming decomposition...
-
-Project Type: [Web App / Python / etc.]
+Resuming planning...
 
 Deliberation: Complete ([N] rounds)
-Decisions: [N] extracted (including [N] DS-XXX)
-Decomposition: Round [M]
 
-Continuing from Round [M+1]...
+Writing spec...
 ```
 
-Then run decomposition loop from current round.
+Then run write-spec agent.
+
+### Resume Pieces Writing
+
+```
+Resuming planning...
+
+Deliberation: Complete ([N] rounds)
+Spec: Written
+
+Writing pieces...
+```
+
+Then run write-pieces agent.
 
 ### Resume Execution
 
 ```
 Resuming execution...
 
-Project Type: [Web App / Python / etc.]
-Infrastructure: [LOCAL / REMOTE]
-
 Progress: [X]% complete
-- Completed: [N] pieces (backend: [n], frontend: [n], fullstack: [n])
+- Completed: [N] pieces
 - Remaining: [M] pieces
-- Decisions available: [N]
 
 Current piece: [Piece X.Y: name]
 Type: [backend / frontend / fullstack]
-Status: [last known status]
 
 Continuing...
 ```
@@ -94,16 +93,15 @@ Then run execution loop from current piece.
 
 Read the latest entries in each file to determine exact state:
 
-- **project-overview.md**: Check "Technical Choices" section for project type
-- **planning-deliberation.md**: Look for last "## Round N" header
-- **planning-decisions.md**: Check if exists and has content
-- **planning-decomposition.md**: Look for last "## Round N" header
-- **build-order.md**: Find first `[ ]` checkbox, parse Types
-- **demo-log.md**: Check for incomplete demo point entries
+- **preferences.md**: Check if exists
+- **overview.md**: Check if exists
+- **deliberation.md**: Look for last "## Round N" header
+- **spec.md**: Check if exists
+- **pieces.md**: Find first `[ ]` checkbox
 
 ## Output
 
 After determining state:
 1. Show current state summary
 2. Ask user to confirm: "Resume from here? (Y/n)"
-3. If confirmed, invoke appropriate command logic (/breezybuilder:plan or /breezybuilder:execute)
+3. If confirmed, invoke appropriate command logic
