@@ -1,5 +1,5 @@
 ---
-description: Initialize BreezyBuilder in the current project. Creates .breezybuilder/ directory with preferences.md from your global config (~/.breezybuilder/) or built-in defaults.
+description: Initialize BreezyBuilder in the current project. Creates .breezybuilder/ directory with preferences.md.
 ---
 
 # BreezyBuilder Init
@@ -8,41 +8,22 @@ Initialize BreezyBuilder for this project.
 
 ## Steps
 
-1. **Check if already initialized**
-   - If `.breezybuilder/` exists with preferences.md:
-     "BreezyBuilder already initialized. Run /breezybuilder:plan to start planning, or delete .breezybuilder/ to reset."
-   - Exit if already initialized
+1. **Check for global config**
+   - Read `~/.breezybuilder/preferences.md`
+   - If it exists, copy it to `.breezybuilder/preferences.md` and note "Using global config"
+   - If it doesn't exist, continue to step 2
 
-2. **Create directory structure**
-   ```
-   .breezybuilder/
-   └── preferences.md    ← Your preferences (Developer, Designer, Product)
-   ```
+2. **Create .breezybuilder/preferences.md with default template**
+   - Create the `.breezybuilder/` directory (if it doesn't exist)
+   - Write the **Default Template** (below) to `.breezybuilder/preferences.md` (overwrite if exists)
+   - Note "Using built-in default"
 
-3. **Copy preferences.md (with global config precedence)**
-
-   ```
-   if ~/.breezybuilder/preferences.md exists:
-       Copy from ~/.breezybuilder/preferences.md
-       Note: "Using global config"
-   else:
-       Copy from plugin's templates/preferences.md
-       Note: "Using built-in default"
-   ```
-
-4. **Output to user**
+3. **Output to user**
    ```
    ✓ BreezyBuilder initialized
 
    Created:
    - .breezybuilder/preferences.md — [Using global config | Using built-in default]
-
-   Global config location: ~/.breezybuilder/
-
-   To set up global config (recommended):
-   1. Create ~/.breezybuilder/ directory
-   2. Copy and customize preferences.md
-   3. Future projects will use your global config automatically
 
    Next steps:
    1. Review preferences.md — Does it match your style?
@@ -51,46 +32,41 @@ Initialize BreezyBuilder for this project.
 
 ## Global Config
 
-Users can create `~/.breezybuilder/` with their preferred config:
-
-```
-~/.breezybuilder/
-└── preferences.md    ← Your preferences
-```
-
-**Precedence:** Global config → Built-in template
-
-This allows users to:
-- Set up once, reuse everywhere
-- Maintain consistent preferences across projects
-- Customize their stack, tools, and design patterns
-
-## preferences.md Structure
-
-The preferences file has three sections, one for each expert:
-
-```markdown
-## Developer
-- Philosophy (simple over clever, etc.)
-- Stack defaults (framework, language, etc.)
-- Tools I like (database, auth, payments, etc.)
-
-## Designer
-- Philosophy (minimal, content-first, etc.)
-- Typography patterns
-- Spacing patterns
-- Layout patterns
-- Component patterns
-- State patterns (loading, empty, error)
-- Accessibility requirements
-
-## Product
-- Philosophy (ship fast, iterate, etc.)
-- Project type detection hints
-- Questions that matter to you
-- Scope preferences
-```
+Users can create `~/.breezybuilder/preferences.md` with their preferred config. If it exists, init uses it instead of the default template.
 
 ## Default Template
 
-If no global config exists, use built-in default from the plugin's `templates/preferences.md`.
+Copy this exactly to `.breezybuilder/preferences.md`:
+
+```markdown
+# Preferences
+
+Your preferences for how projects should be built.
+
+> **Note:** Do not rename or create custom headings. The following sections are expected by the planning agents:
+> - `## Developer` — Technical preferences (stack, database, tools)
+> - `## Designer` — Visual/UX preferences (components, patterns)
+> - `## Product` — Product preferences (scope, MVP, user flows)
+
+---
+
+## Developer
+
+- **Database:** PostgreSQL + Drizzle — Local Docker postgres:16, deploy remote later
+- **Time-series:** TimescaleDB + Drizzle — Local Docker timescale/timescaledb, deploy remote later
+
+---
+
+## Designer
+
+- **Stack:** BaseUI + shadcn/ui + Tailwind 4 (all components already installed)
+- **Loading:** Skeleton for content, spinner for buttons
+- **Empty:** Centered message with optional CTA
+- **Error:** Inline for forms, toast for actions
+
+---
+
+## Product
+
+- Ship MVP first, iterate later
+```
