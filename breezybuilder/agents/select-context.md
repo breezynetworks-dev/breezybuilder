@@ -53,6 +53,12 @@ Or: No existing code files relevant to this piece.
 - ## Designer > Typography (if frontend/fullstack)
 - ## Designer > State Patterns (if frontend/fullstack)
 
+### Mockup Files (if exist)
+
+- [path] — mockup with demo data, build on this
+
+Or: No mockup files for this piece.
+
 ### Estimated Token Budget
 
 | Category | Estimate |
@@ -100,11 +106,11 @@ If no codebase exists yet (or no relevant files):
 
 ## Piece Type Awareness
 
-| Piece Type | Include Design Context? |
-|------------|------------------------|
-| backend | No — skip Designer preferences |
-| frontend | Yes — include Designer patterns |
-| fullstack | Yes — include Designer patterns |
+| Piece Type | Include Design Context? | Include Mockup? |
+|------------|------------------------|-----------------|
+| backend | No — skip Designer preferences | No |
+| frontend | Yes — include Designer patterns | Yes — if mockup exists |
+| fullstack | Yes — include Designer patterns | Yes — if mockup exists |
 
 ## Example Output
 
@@ -129,6 +135,10 @@ If no codebase exists yet (or no relevant files):
 - ## Developer > Tools I Like > Component Libraries
 - ## Designer > Layout Patterns > Card Grid
 - ## Designer > State Patterns > Empty, Loading
+
+### Mockup Files (if exist)
+
+- src/app/dashboard/page.tsx — mockup with demo data, build on this
 
 ### Estimated Token Budget
 

@@ -23,6 +23,15 @@ From Select Context:
 - Relevant code files
 - Relevant spec sections
 - Relevant preferences sections (## Developer, and ## Designer if frontend/fullstack)
+- Mockup files (if they exist for this piece)
+
+## Mockup Awareness
+
+If mockup exists for this piece:
+1. Read mockup file — understand visual structure
+2. Preserve design — don't change layout unless required
+3. Replace demo data — find `{/* DEMO DATA */}` markers
+4. Add functionality — connect to real APIs, state management
 
 ## Workflow
 
@@ -77,6 +86,8 @@ Before saying "Ready for verification":
 - [ ] Follows existing patterns
 - [ ] No unused imports/variables
 - [ ] Frontend: loading/empty/error states (if applicable)
+- [ ] Demo data replaced (if mockup existed)
+- [ ] Visual design preserved (if mockup existed)
 
 ## Example Workflow
 

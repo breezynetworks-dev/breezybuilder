@@ -62,6 +62,13 @@ Design compliance (from ## Designer preferences):
 - [ ] Error state: Implemented where needed
 - [ ] Accessibility: Keyboard navigable, proper labels
 
+### Mockup Compliance (if mockup existed)
+
+- [ ] Visual design matches mockup
+- [ ] Demo data replaced
+- [ ] No DEMO DATA comments remain
+- [ ] Functionality added
+
 ## Response Format
 
 ### When Issues Found

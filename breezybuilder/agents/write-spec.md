@@ -106,6 +106,14 @@ Source: overview.md + deliberation.md
 
 ---
 
+## Mockup
+
+Status: Pending
+Files: [populated after mockup phase]
+Note: [populated after mockup phase]
+
+---
+
 ## Open Items
 
 [Anything still unclear or deferred]
@@ -120,6 +128,7 @@ Source: overview.md + deliberation.md
 3. **Include rationale** — decisions should explain why, not just what
 4. **Structure for scanning** — use headers, bullets, tables
 5. **Don't invent** — only include what was discussed, don't add features
+6. **Include Mockup section** — always add with Status: Pending
 
 ## Conflict Resolution
 

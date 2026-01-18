@@ -27,7 +27,7 @@ Initialize BreezyBuilder for this project.
 
    Next steps:
    1. Review preferences.md — Does it match your style?
-   2. Run /breezybuilder:plan to start planning your project
+   2. Run /breezybuilder to start
    ```
 
 ## Global Config
