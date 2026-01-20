@@ -41,22 +41,35 @@ For each pending piece in order:
 #### 2a: Select Context
 
 Invoke `breezybuilder-select-context` subagent:
-- Pass: current piece section, spec.md, codebase access
-- Receive: relevant files, spec sections, preferences sections, mockup files
+- Pass: current piece section (from pieces.md), spec.md, preferences.md, codebase access
+- Receive: relevant files, spec sections, preferences sections, mockup files (if applicable)
 
 If estimated tokens > 50k, warn but continue.
 
 #### 2b: Implement ↔ Verify Loop
 
-1. Invoke `breezybuilder-implement` subagent (stays open):
-   - Pass: piece info, relevant files, spec sections, preferences, mockups
+You orchestrate the back-and-forth between Implement and Verify:
 
-2. Invoke `breezybuilder-verify` subagent (stays open):
-   - Pass: piece info, spec sections, preferences, codebase access
+```
+iteration = 0
+loop:
+  iteration += 1
 
-3. Agents converse until Verify responds "VERIFIED"
+  1. Invoke `breezybuilder-implement` subagent:
+     - Pass: piece info, context from select-context, previous issues (if any)
+     - Implement writes code and returns "Ready for verification"
 
-4. Both agents complete
+  2. Invoke `breezybuilder-verify` subagent:
+     - Pass: piece info, acceptance criteria, preferences
+     - Verify checks code and returns VERIFIED or ISSUES: [list]
+
+  3. If VERIFIED: break loop, piece is done
+     If ISSUES:
+       - If iteration >= 5: return PIECE_BLOCKED (see Error Handling)
+       - Otherwise: loop again, passing issues to Implement
+```
+
+**Key:** You are the message passer. Implement and Verify don't talk directly — you invoke each in turn and pass results between them.
 
 #### 2c: Mark Complete
 

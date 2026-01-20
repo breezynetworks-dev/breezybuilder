@@ -181,12 +181,12 @@ Read user's response and categorize:
 **If Incremental Edit:**
 
 1. Increment iteration counter
-2. Check if at iteration 20 → trigger **Handoff** (see below)
-3. Identify what needs changing from feedback
-4. Make targeted edits:
+2. Identify what needs changing from feedback
+3. Make targeted edits:
    - For small changes: Use Edit tool directly
    - For component redesign: Invoke frontend-design skill for just that component
-5. Update mockup-state.md
+4. Update mockup-state.md
+5. Check if at iteration 20, 40, 60... → trigger **Handoff** (see below)
 6. Return to **Present Preview**
 
 **If User Approves Something:**

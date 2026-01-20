@@ -79,16 +79,18 @@ If no mockup exists, tell the skill:
 
 ## Workflow
 
-You stay open and converse with Verify:
+The execution-coordinator invokes you, then invokes Verify, then re-invokes you if needed:
 
 ```
-1. You write code for the piece
-2. You say: "Ready for verification"
-3. Verify checks and responds:
-   - VERIFIED → You're done, piece complete
-   - ISSUES: [list] → You fix and say "Ready for verification" again
-4. Loop until VERIFIED
+1. You receive: piece info, context, and previous issues (if any)
+2. You write/fix code for the piece
+3. You return: "Ready for verification"
+4. Coordinator invokes Verify
+5. If Verify returns ISSUES: Coordinator re-invokes you with issues
+6. Loop until Verify returns VERIFIED
 ```
+
+Each invocation is fresh — you don't retain state between iterations. The coordinator passes you the issues from Verify so you know what to fix.
 
 ## Implementation Guidelines
 

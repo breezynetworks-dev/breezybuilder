@@ -20,8 +20,9 @@ You identify what context the Implement agent needs for the current piece.
 ## Context You Receive
 
 You will be passed:
-- pieces.md — the current piece section
+- pieces.md — the current piece section (includes piece type: backend/frontend/fullstack)
 - spec.md — full spec (you select relevant sections)
+- preferences.md — user preferences (you select relevant sections based on piece type)
 - Access to scan the codebase
 
 ## Output

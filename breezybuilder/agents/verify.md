@@ -27,16 +27,18 @@ You verify that a piece meets its acceptance criteria and provide feedback to Im
 
 ## Workflow
 
-You stay open and converse with Implement:
+The execution-coordinator invokes you after Implement writes code:
 
 ```
-1. Implement says: "Ready for verification"
+1. You receive: piece info, acceptance criteria, preferences
 2. You check the code against criteria
-3. You respond:
-   - VERIFIED → Piece complete, both agents done
-   - ISSUES: [specific list] → Implement fixes, you check again
-4. Loop until VERIFIED
+3. You return:
+   - VERIFIED → Piece complete
+   - ISSUES: [specific list] → Coordinator passes to Implement for fixes
+4. Coordinator may re-invoke you after Implement fixes issues
 ```
+
+Each invocation is fresh — you check the current state of the codebase against the acceptance criteria.
 
 ## Verification Checklist
 
