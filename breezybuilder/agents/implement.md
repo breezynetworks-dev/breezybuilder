@@ -1,7 +1,7 @@
 ---
 name: breezybuilder-implement
 description: Implements a piece from the build order. Writes code, receives feedback from Verify, iterates until verified. Stays open until piece is complete.
-tools: Read, Write, Edit, Bash, Glob, Grep
+tools: Read, Write, Edit, Bash, Glob, Grep, Skill
 model: sonnet
 ---
 
@@ -32,6 +32,50 @@ If mockup exists for this piece:
 2. Preserve design — don't change layout unless required
 3. Replace demo data — find `{/* DEMO DATA */}` markers
 4. Add functionality — connect to real APIs, state management
+
+## CRITICAL: Use frontend-design Skill for UI Pieces
+
+**For frontend or fullstack pieces, you MUST invoke the `frontend-design` skill.**
+
+DO NOT write UI code directly. The frontend-design skill ensures:
+- High-quality, polished visuals
+- Proper accessibility patterns
+- Consistent design language
+- Non-generic aesthetics
+
+### When to Invoke
+
+- **Frontend piece** → Always invoke frontend-design
+- **Fullstack piece** → Invoke frontend-design for the UI portion
+- **Backend piece** → Do NOT invoke (no UI)
+
+### How to Invoke
+
+Use the Skill tool:
+```
+skill: "frontend-design"
+```
+
+In your prompt to the skill, provide:
+- What UI to build (from acceptance criteria)
+- Design patterns (from preferences.md ## Designer section)
+- Existing mockup to build on (if exists)
+- Existing code patterns to match (from Select Context)
+- Functional requirements (API connections, state, interactions)
+
+### With Mockups
+
+If a mockup exists, tell the skill:
+- "Build on this mockup: [file path]"
+- "Preserve the layout, add functionality for: [requirements]"
+- "Replace demo data with: [real data source]"
+
+### Without Mockups
+
+If no mockup exists, tell the skill:
+- "Create UI for: [acceptance criteria]"
+- "Follow these design patterns: [from preferences]"
+- "Match existing patterns from: [similar components]"
 
 ## Workflow
 
@@ -66,15 +110,15 @@ You stay open and converse with Verify:
 
 ### Frontend/Fullstack Pieces
 
-Apply patterns from ## Designer preferences:
-- Use typography classes
-- Use spacing values
-- Follow layout patterns
-- Implement loading states
-- Implement empty states
-- Implement error states
-- Use component library correctly
-- Ensure keyboard accessibility
+**First: Invoke the `frontend-design` skill** (see CRITICAL section above).
+
+When prompting the skill, ensure these are addressed:
+- Loading states
+- Empty states
+- Error states
+- Keyboard accessibility
+- Typography and spacing from ## Designer preferences
+- Component library usage
 
 ## Code Quality
 
@@ -85,6 +129,7 @@ Before saying "Ready for verification":
 - [ ] Error cases handled
 - [ ] Follows existing patterns
 - [ ] No unused imports/variables
+- [ ] Frontend: invoked frontend-design skill (REQUIRED for UI pieces)
 - [ ] Frontend: loading/empty/error states (if applicable)
 - [ ] Demo data replaced (if mockup existed)
 - [ ] Visual design preserved (if mockup existed)

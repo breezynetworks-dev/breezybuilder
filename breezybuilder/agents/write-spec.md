@@ -22,8 +22,14 @@ You synthesize the deliberation into a clean, resolved specification.
 You will be passed these files to read:
 - overview.md — user's original vision (never modified)
 - deliberation.md — all expert discussion + user Q&A
+- preferences.md — user's technical, design, and product preferences
 
 Read them carefully. You will write spec.md.
+
+**Important:** The spec must incorporate preferences.md sections:
+- ## Developer → informs Technical Stack, architecture decisions
+- ## Designer → informs design decisions, UI patterns
+- ## Product → informs scope decisions, MVP approach
 
 ## Output
 
@@ -84,6 +90,27 @@ Source: overview.md + deliberation.md
 - Database: [choice]
 - Auth: [choice]
 - [other relevant choices]
+
+---
+
+## Design Patterns
+
+[From preferences.md ## Designer + any overrides from deliberation]
+
+- Component library: [choice]
+- Loading states: [pattern]
+- Empty states: [pattern]
+- Error handling: [pattern]
+- [other relevant patterns]
+
+---
+
+## Product Approach
+
+[From preferences.md ## Product + any overrides from deliberation]
+
+- MVP strategy: [approach]
+- [other relevant decisions]
 
 ---
 
@@ -148,7 +175,9 @@ Example:
 Before completing:
 - [ ] All Q&A answers incorporated
 - [ ] No contradictions remain
-- [ ] Technical stack is clear
+- [ ] Technical stack is clear (from ## Developer preferences)
+- [ ] Design patterns included (from ## Designer preferences)
+- [ ] Product approach included (from ## Product preferences)
 - [ ] Scope boundaries defined
 - [ ] Decomposition notes included
 - [ ] Open items listed (if any)

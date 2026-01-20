@@ -8,26 +8,50 @@ Initialize BreezyBuilder for this project.
 
 ## Steps
 
-1. **Check for global config**
+1. **Check git repository**
+   - Check if `.git/` directory exists in the current project
+   - If it doesn't exist, run `git init` to initialize a new repository
+   - Note "Initialized git repository" if created, otherwise skip silently
+
+2. **Check for frontend-design plugin**
+   - Run `claude plugin list` and capture output
+   - Check if `frontend-design@claude-plugins-official` appears in the output
+   - If NOT found, set a warning flag to display later
+   - Do NOT block initialization — just warn
+
+3. **Check for global config**
    - Read `~/.breezybuilder/preferences.md`
    - If it exists, copy it to `.breezybuilder/preferences.md` and note "Using global config"
-   - If it doesn't exist, continue to step 2
+   - If it doesn't exist, continue to step 4
 
-2. **Create .breezybuilder/preferences.md with default template**
+4. **Create .breezybuilder/preferences.md with default template**
    - Create the `.breezybuilder/` directory (if it doesn't exist)
    - Write the **Default Template** (below) to `.breezybuilder/preferences.md` (overwrite if exists)
    - Note "Using built-in default"
 
-3. **Output to user**
+5. **Output to user**
    ```
    ✓ BreezyBuilder initialized
 
    Created:
    - .breezybuilder/preferences.md — [Using global config | Using built-in default]
+   [- Initialized git repository (if created)]
 
    Next steps:
    1. Review preferences.md — Does it match your style?
    2. Run /breezybuilder to start
+   ```
+
+   **If frontend-design plugin was NOT found, append:**
+   ```
+   ⚠ Recommended plugin not installed
+
+   BreezyBuilder uses the frontend-design plugin for UI mockups.
+   Install it with:
+
+     claude plugin install frontend-design@claude-plugins-official
+
+   You can still use BreezyBuilder without it, but mockups may be lower quality.
    ```
 
 ## Global Config

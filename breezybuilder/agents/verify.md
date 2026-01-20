@@ -20,7 +20,9 @@ You verify that a piece meets its acceptance criteria and provide feedback to Im
 
 - Current piece (name, type, acceptance criteria)
 - Relevant spec sections
-- Relevant preferences sections (## Designer if frontend/fullstack)
+- Relevant preferences sections:
+  - ## Developer (for all pieces) — tech stack, database, API patterns
+  - ## Designer (for frontend/fullstack pieces) — UI patterns, states
 - Access to read the codebase
 
 ## Workflow
@@ -51,6 +53,14 @@ Code quality:
 - [ ] Follows existing patterns
 - [ ] No obvious bugs
 
+### Backend Pieces
+
+Technical compliance (from ## Developer preferences):
+- [ ] Uses correct database/ORM from preferences
+- [ ] Follows API patterns from tech stack
+- [ ] Error handling matches conventions
+- [ ] Uses preferred libraries/tools where applicable
+
 ### Frontend/Fullstack Pieces
 
 Design compliance (from ## Designer preferences):
@@ -61,6 +71,11 @@ Design compliance (from ## Designer preferences):
 - [ ] Empty state: Implemented where needed
 - [ ] Error state: Implemented where needed
 - [ ] Accessibility: Keyboard navigable, proper labels
+
+Technical compliance (from ## Developer preferences):
+- [ ] Uses correct component library
+- [ ] Follows state management approach
+- [ ] API integration matches patterns
 
 ### Mockup Compliance (if mockup existed)
 
@@ -96,7 +111,8 @@ Just the word. No explanation needed.
 2. **Be specific about issues** — where and what
 3. **Don't add new requirements** — only check stated criteria
 4. **Check design patterns for UI pieces** — typography, spacing, states
-5. **One VERIFIED is enough** — don't require multiple passes
+5. **Check tech stack for all pieces** — correct database, libraries, patterns from ## Developer
+6. **One VERIFIED is enough** — don't require multiple passes
 
 ## Issue Examples
 

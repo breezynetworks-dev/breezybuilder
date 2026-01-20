@@ -19,7 +19,7 @@ Check files in `.breezybuilder/` to determine current state:
 5. deliberation.md complete, no spec.md → Write spec
 6. spec.md exists, no pieces.md → Mockup (if UI) then write pieces
 7. pieces.md exists, has [ ] items → Execute/resume execution
-8. pieces.md exists, all [x] → Complete
+8. pieces.md exists, all [x] → Run post-build validation
 ```
 
 ## Phase: Not Initialized
@@ -143,7 +143,7 @@ Append to deliberation.md:
 ## Phase: Write Spec
 
 1. Invoke `breezybuilder-write-spec` subagent
-   - Pass: overview.md, deliberation.md
+   - Pass: overview.md, deliberation.md, preferences.md
    - Agent writes to `.breezybuilder/spec.md`
 
 2. Present spec summary to user:
@@ -190,87 +190,39 @@ This will:
 
 If No: Skip to Write Pieces phase.
 
-### Step 2: Git Setup
+### Step 2: Invoke Mockup Coordinator
 
-1. Stash uncommitted changes:
-   ```bash
-   git stash push -m "breezy-mockup-stash"
-   ```
+Invoke `breezybuilder-mockup-coordinator` subagent:
+- Pass: spec.md, preferences.md
+- Agent handles entire mockup loop internally:
+  - Git setup (branch, stash)
+  - Mockup generation (uses frontend-design skill)
+  - User preview and feedback
+  - Iterations (max 5 attempts)
+  - Git cleanup (commit/merge or discard)
+- Agent returns: `MOCKUP_STATUS: complete` or `MOCKUP_STATUS: cancelled`
 
-2. Create mockup branch:
-   ```bash
-   git checkout -b mockup-v1
-   ```
+**Why a dedicated agent:** The mockup feedback loop can involve multiple iterations. Running this in a subagent keeps all iterations contained, preventing context growth in the main conversation.
 
-### Step 3: Generate Mockup
+### Step 3: Handle Coordinator Result
 
-Invoke `breezybuilder-designer` subagent in mockup mode:
-- Pass: `MODE: mockup`
-- Pass: spec.md, preferences.md (## Designer section)
-- Pass: existing code patterns (via Glob/Grep) if project has UI
-- Tools: Read, Write, Edit, Glob, Grep, Skill
-- Agent invokes `frontend-design` skill for visual generation
+**If `MOCKUP_STATUS: complete`:**
+- Note the files created
+- Continue to Write Pieces
 
-### Step 4: User Preview
+**If `MOCKUP_STATUS: cancelled`:**
+- Continue to Write Pieces without mockup
 
-```
-═══════════════════════════════════════════════════════════════
-MOCKUP READY
-═══════════════════════════════════════════════════════════════
-
-Branch: mockup-v1
-Files created:
-- [list of files]
-
-Run your dev server to preview.
-
-[Looks good] / [Try again] / [Cancel]
-
-Optional feedback for "Try again": ___
-```
-
-### Step 5: Handle Response
-
-**Looks good:**
-```bash
-git add -A && git commit -m "Mockup: UI design"
-git checkout main
-git merge mockup-v1 --no-edit
-git branch -d mockup-v1
-git stash pop || true
-```
-
-Update spec.md `## Mockup` section:
-```markdown
-## Mockup
-
-Status: Complete
-Files:
-- [list of mockup files]
-
-Note: Build on mockups. Remove demo data during implementation.
-```
-
-Continue to Write Pieces.
-
-**Try again:**
-```bash
-git checkout -- .  # Discard changes
-```
-Re-invoke Designer with user feedback. Loop (max 5 attempts).
-
-**Cancel:**
-```bash
-git checkout main
-git branch -D mockup-v1
-git stash pop || true
-```
-Continue to Write Pieces without mockup.
+**If `MOCKUP_STATUS: handoff`:**
+- Coordinator hit 20 iterations and needs fresh context
+- Spawn a NEW `breezybuilder-mockup-coordinator` subagent
+- The new coordinator will read `.breezybuilder/mockup-handoff.md` and continue
+- Loop back to handle the new coordinator's result
 
 ## Phase: Write Pieces
 
 1. Invoke `breezybuilder-write-pieces` subagent
-   - Pass: spec.md
+   - Pass: spec.md, preferences.md
    - Agent writes to `.breezybuilder/pieces.md`
 
 2. Present pieces summary to user:
@@ -284,7 +236,6 @@ Continue to Write Pieces without mockup.
 
    Phase 1: [name] — [N pieces]
    Phase 2: [name] — [N pieces]
-     ◆ DEMO POINT
    Phase 3: [name] — [N pieces]
    ...
 
@@ -311,9 +262,8 @@ Continue to Write Pieces without mockup.
 ### Pre-flight
 
 1. Verify `.breezybuilder/pieces.md` exists
-2. Parse pieces.md to find current state:
-   - Find first piece with `[ ]` (not complete)
-   - If all pieces `[x]`: Show completion, stop
+2. Parse pieces.md to identify all phases
+3. If all pieces `[x]`: Skip to Post-Build Validation
 
 ### Resume Check
 
@@ -322,114 +272,176 @@ If resuming (pieces.md has some `[x]` items):
 Resuming execution...
 
 Progress: [X]% complete
-- Completed: [N] pieces
-- Remaining: [M] pieces
+- Phases complete: [N]/[M]
+- Pieces complete: [N]/[M]
 
-Current piece: [Piece X.Y: name]
-
-Continuing...
+Continuing from Phase [N]...
 ```
 
-### Execution Loop
+### Phase-by-Phase Execution
 
-For each pending piece in pieces.md:
+Execute each phase using a dedicated coordinator subagent.
 
-#### Step 1: Select Context
+**Why:** Each phase runs in isolated context, preventing main conversation from accumulating piece-by-piece details. If a phase has many pieces, the coordinator hands off internally.
 
-1. Invoke `breezybuilder-select-context` subagent
-   - Pass: current piece section from pieces.md, spec.md, codebase access
-   - Receive:
-     - List of relevant code files (may be empty for greenfield)
-     - Relevant spec sections
-     - Relevant preferences sections
-     - Mockup files (if exist)
-     - Estimated token budget
+#### For Each Phase:
 
-2. If no relevant files found:
-   - This is normal for early pieces (greenfield)
-   - Continue with empty file list
+1. **Identify current phase:**
+   - Find first phase with any `[ ]` pieces
+   - Get phase number and name
 
-3. If estimated tokens > 50k:
-   - Warn: "Piece may be too large. Consider splitting."
-   - Ask user to continue or pause
+2. **Invoke `breezybuilder-execution-coordinator` subagent:**
+   - Pass: phase number, pieces.md, spec.md, preferences.md
+   - Coordinator handles all pieces in that phase:
+     - Select context per piece
+     - Implement ↔ verify loop per piece
+     - Updates pieces.md as pieces complete
+     - Hands off internally if 10+ pieces
 
-#### Step 2: Implement ↔ Verify Loop
+3. **Handle coordinator result:**
 
-1. Invoke `breezybuilder-implement` subagent (stays open)
-   - Pass:
-     - Current piece (name, type, acceptance criteria)
-     - Relevant code files (from Select Context)
-     - Relevant spec sections
-     - Relevant preferences sections
-     - Mockup files (if exist)
+   **If `PHASE_COMPLETE`:**
+   ```
+   ═══════════════════════════════════════════════════════════════
+   PHASE [N] COMPLETE: [Name]
+   ═══════════════════════════════════════════════════════════════
 
-2. Invoke `breezybuilder-verify` subagent (stays open)
-   - Pass:
-     - Current piece (name, type, acceptance criteria)
-     - Relevant spec sections
-     - Relevant preferences sections (## Designer if frontend/fullstack)
-     - Access to read codebase
+   Pieces completed: [N]
+   - [Piece X.1]: [summary]
+   - [Piece X.2]: [summary]
+   - ...
 
-3. Agents converse until Verify responds "VERIFIED"
+   Progress: [N]/[M] phases, [N]/[M] pieces
 
-4. Both agents despawn after VERIFIED
+   Continuing to Phase [N+1]...
+   ```
+   Continue to next phase.
 
-#### Step 3: Mark Complete
+   **If `HANDOFF_NEEDED`:**
+   - Coordinator hit 10 pieces and needs fresh context
+   - Spawn NEW `breezybuilder-execution-coordinator` for same phase
+   - It reads `execution-state.md` and continues
+   - Loop until phase complete
 
-1. Update pieces.md:
-   - Change `- [ ] Piece X.Y` to `- [x] Piece X.Y`
+   **If `PIECE_BLOCKED`:**
+   - A piece failed verification repeatedly
+   - Show user the issue
+   - Ask: [Skip piece] / [Pause execution]
+   - If skip: mark piece as blocked, coordinator continues
+   - If pause: stop execution, user can resume later
 
-2. Check for demo point after this piece/phase
+4. **Phase complete → next phase:**
+   - Delete `execution-state.md` if exists
+   - Continue to next phase with `[ ]` pieces
 
-#### Step 4: Demo Point Check
+### All Phases Complete
 
-If demo point reached:
+When all phases done, continue to Post-Build Validation.
+
+## Phase: Post-Build Validation
+
+When all pieces are `[x]`, run validation before declaring complete.
+
+### Step 1: Environment Check
+
+1. **Find required env vars:**
+   - First, check for `.env.example` — use as source of truth
+   - If no `.env.example`, grep codebase for `process.env.` and `import.meta.env.`
+   - Build list of required variables
+
+2. **Check `.env` file exists:**
+   - If missing: "Create a `.env` file in project root"
+   - Wait for user to confirm
+
+3. **Check each required var:**
+   - Is it present in `.env`?
+   - Is it set (not empty)?
+   - Is it not a placeholder? (detect patterns like `your-api-key-here`, `xxx`, `changeme`, `<your-key>`)
+
+4. **Report status:**
+   ```
+   ═══════════════════════════════════════════════════════════════
+   ENVIRONMENT CHECK
+   ═══════════════════════════════════════════════════════════════
+
+   Required variables:
+   ✓ DATABASE_URL — set
+   ✓ OPENAI_API_KEY — set
+   ✗ STRIPE_SECRET_KEY — missing
+   ✗ AUTH_SECRET — placeholder detected ("changeme")
+
+   Please update your .env file and press Enter to re-check.
+   ```
+
+5. **Loop until all vars pass**, then continue.
+
+### Step 2: Connectivity Check
+
+1. **Identify services from spec.md `## Technical Stack`:**
+   - Database (Postgres, MySQL, etc.)
+   - Auth provider (if external)
+   - External APIs (Stripe, OpenAI, etc.)
+
+2. **For each service, run appropriate check:**
+
+   | Service Type | Check Method |
+   |--------------|--------------|
+   | PostgreSQL | `SELECT 1` query via connection string |
+   | MySQL | `SELECT 1` query via connection string |
+   | Redis | `PING` command |
+   | External API | Health endpoint or simple authenticated request |
+   | Auth provider | Token validation endpoint |
+
+3. **Report status:**
+   ```
+   ═══════════════════════════════════════════════════════════════
+   CONNECTIVITY CHECK
+   ═══════════════════════════════════════════════════════════════
+
+   Services:
+   ✓ PostgreSQL — connected (23ms)
+   ✓ OpenAI API — responding
+   ✗ Stripe API — failed: Invalid API key
+
+   Please fix the issues and press Enter to re-check.
+   ```
+
+4. **Loop until all services pass**, then continue.
+
+### Step 3: Validation Complete
 
 ```
-◆ DEMO POINT REACHED
-
-Phase [N]: [name] complete
-
-What's working:
-- [functionality list]
-
-OPTIONS:
-1. Continue — proceed to next phase
-2. Feedback — note issues before continuing
-3. Stop here — execution ends
-
-Enter 1, 2, or 3:
-```
-
-Handle user choice:
-- **1 (Continue)**: Proceed to next piece
-- **2 (Feedback)**: Capture feedback, ask if minor or major
-- **3 (Stop)**: End execution
-
-#### Step 5: Next Piece
-
-- Move to next `[ ]` piece in pieces.md
-- Return to Step 1
-
-## Phase: Complete
-
-When all pieces are `[x]`:
-
-```
-════════════════════════════════════════
-✓ BUILD COMPLETE
-════════════════════════════════════════
+═══════════════════════════════════════════════════════════════
+✓ BUILD & VALIDATION COMPLETE
+═══════════════════════════════════════════════════════════════
 
 Phases: [N] complete
 Pieces: [N] implemented
+Environment: ✓ configured
+Services: ✓ connected
+
+Your project is ready for testing.
+
+[Test automatically] / [Test manually]
+```
+
+**If "Test automatically":**
+- Run `/breezybuilder:test` (to be implemented)
+- Comprehensive feature testing
+
+**If "Test manually":**
+```
+Ready for manual testing.
+
+When you want automated testing, run:
+  /breezybuilder:test
 
 Files:
 - .breezybuilder/overview.md — original vision
-- .breezybuilder/deliberation.md — expert discussion
 - .breezybuilder/spec.md — resolved spec
 - .breezybuilder/pieces.md — build order
 
-Your project is ready.
+To add more features, just run /breezybuilder and describe what you want.
 ```
 
 ## Error Handling

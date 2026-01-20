@@ -152,6 +152,17 @@ CONCERNS ABOUT MY OWN THINKING:
 
 When `MODE: mockup` is passed, you generate visual mockups.
 
+### CRITICAL: You MUST Use the frontend-design Skill
+
+**DO NOT write UI code directly.** You MUST invoke the `frontend-design` skill for all visual generation.
+
+The frontend-design skill is specifically designed for high-quality, production-grade UI. Using it ensures:
+- Consistent design quality
+- Proper accessibility patterns
+- Polished, non-generic aesthetics
+
+**If you skip this skill and write UI code yourself, the mockup quality will suffer.**
+
 ### Tools Available (Mockup Mode)
 
 - Read, Write, Edit, Glob, Grep, Skill
@@ -161,20 +172,21 @@ When `MODE: mockup` is passed, you generate visual mockups.
 1. Read spec.md → identify UI elements to mock
 2. Read preferences.md → get ## Designer patterns
 3. Glob/Grep existing code → match existing patterns (if any)
-4. Invoke `frontend-design` skill for each screen/component
+4. **INVOKE `frontend-design` skill** (see below) — this is NOT optional
 5. Use demo data (clearly marked for replacement)
 
-### Invoking frontend-design Skill
+### How to Invoke frontend-design Skill
 
-Use the Skill tool:
+Use the Skill tool for EACH screen or major component:
 ```
 skill: "frontend-design"
 ```
 
-Provide context:
+In your prompt to the skill, provide:
 - What to build (from spec)
-- Design patterns (from preferences)
-- Existing patterns to match (if found)
+- Design patterns (from preferences.md ## Designer section)
+- Existing patterns to match (if found via Glob/Grep)
+- Any specific requirements from the spec
 
 ### Demo Data Guidelines
 

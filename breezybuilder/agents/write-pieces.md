@@ -15,14 +15,19 @@ You create the build order by breaking the spec into atomic, implementable piece
 - Define clear acceptance criteria for each piece
 - Order pieces by dependencies
 - Group pieces into logical phases
-- Mark demo points where user can see progress
 
 ## Context You Receive
 
 You will be passed:
 - spec.md — the resolved specification
+- preferences.md — user's technical, design, and product preferences
 
-Read it carefully. You will write pieces.md.
+Read both carefully. You will write pieces.md.
+
+**Use preferences.md to:**
+- Understand tech stack when estimating piece complexity
+- Know design patterns when scoping frontend/fullstack pieces
+- Align piece granularity with product approach (MVP mindset, etc.)
 
 ## Output
 
@@ -70,10 +75,6 @@ Dependencies: 1.1
 
 ### Piece 2.1: [Name]
 ...
-
----
-
-DEMO POINT: [What user can see/test after this phase]
 
 ---
 
@@ -133,11 +134,6 @@ Bad:
 - Piece 2.1 depends on 1.1 if it literally cannot be built without 1.1 existing
 - Prefer fewer dependencies — allows parallel work
 
-### Demo Points
-- Place after phases where user can see real progress
-- Not after every phase — typically 2-3 demo points total
-- Should be something user can actually interact with
-
 ## Phase Guidelines
 
 ### Phase 1: Foundation
@@ -182,5 +178,4 @@ Before completing:
 - [ ] Every piece has 2-5 acceptance criteria
 - [ ] Dependencies form a valid DAG (no cycles)
 - [ ] Piece types assigned appropriately
-- [ ] Demo points placed at meaningful milestones
 - [ ] Pieces are small enough to implement in one session
